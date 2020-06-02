@@ -40,4 +40,10 @@ public class RestProductController implements ProductController {
         final ProductResponse productResponse = productManager.retrieveProduct(productId);
         return ResponseEntity.ok(productResponse);
     }
+
+    @Override
+    @DeleteMapping("/{productId}")
+    public void delete(@PathVariable("productId") final Long productId) {
+        productManager.delete(productId);
+    }
 }

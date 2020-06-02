@@ -11,4 +11,5 @@ public interface ProductController {
     ResponseEntity<IdResponse> create(final ProductCreateRequest productCreateRequest);
     ResponseEntity<List<ProductResponse>> list();
     ResponseEntity<ProductResponse> retrieveProduct(final Long productId);
+    void delete(final Long productId);
 }

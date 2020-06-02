@@ -40,4 +40,9 @@ public class ProductService {
         final Product product = productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("product"));
         return productToVoConverter.convert(product);
     }
+
+    public void delete(final Long productId) {
+        final Product product = productRepository.findById(productId).orElseThrow(() -> new EntityNotFoundException("product"));
+        productRepository.delete(product);
+    }
 }

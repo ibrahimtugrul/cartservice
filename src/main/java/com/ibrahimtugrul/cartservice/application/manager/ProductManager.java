@@ -37,4 +37,8 @@ public class ProductManager {
         final ProductVo productVo = productService.retrieve(productId);
         return productVoToProductResponseMapper.apply(productVo);
     }
+
+    public void delete(final Long productId) {
+        productService.delete(productId);
+    }
 }

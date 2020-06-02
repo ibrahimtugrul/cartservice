@@ -122,7 +122,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void should_retrieve_products_when_product_found() {
+    public void should_retrieve_product_when_product_found() {
         // given
         final Long id = 1L;
         final Product product = Product.builder()
@@ -160,7 +160,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void should_throw_exception_when_product_found() {
+    public void should_throw_exception_when_product_not_found() {
         // given
         final Long id = 1L;
 
@@ -170,7 +170,58 @@ public class ProductServiceTest {
         final Throwable throwable = catchThrowable(()->{productService.retrieve(id);});
 
         // then
+        assertThat(throwable).isNotNull();
+        assertThat(throwable).isInstanceOf(EntityNotFoundException.class);
 
+        final EntityNotFoundException entityNotFoundException = (EntityNotFoundException) throwable;
+        assertThat(entityNotFoundException.getLocalizedMessage().contains(ERR_ENTITY_NOT_FOUND)).isTrue();
+    }
+
+    @Test
+    public void should_delete_product_when_product_found() {
+        // given
+        final Long id = 1L;
+        final Product product = Product.builder()
+                .title("title")
+                .price(15.0)
+                .categoryId(2L)
+                .id(1L)
+                .build();
+
+        // when
+        when(productRepository.findById(id)).thenReturn(Optional.of(product));
+
+        productService.delete(id);
+
+        // then
+        productArgumentCaptor = ArgumentCaptor.forClass(Product.class);
+
+        final InOrder inOrder = Mockito.inOrder(productRepository);
+        inOrder.verify(productRepository).findById(id);
+        inOrder.verify(productRepository).delete(productArgumentCaptor.capture());
+        inOrder.verifyNoMoreInteractions();
+
+        assertThat(productArgumentCaptor.getValue()).isNotNull();
+
+        final Product foundedProduct = productArgumentCaptor.getValue();
+
+        assertThat(foundedProduct.getPrice()).isEqualTo(product.getPrice());
+        assertThat(foundedProduct.getTitle()).isEqualTo(product.getTitle());
+        assertThat(foundedProduct.getId()).isEqualTo(product.getId());
+        assertThat(foundedProduct.getCategoryId()).isEqualTo(product.getCategoryId());
+    }
+
+    @Test
+    public void should_throw_exception_when_delete_product_not_found() {
+        // given
+        final Long id = 1L;
+
+        // when
+        when(productRepository.findById(id)).thenReturn(Optional.ofNullable(null));
+
+        final Throwable throwable = catchThrowable(()->{productService.delete(id);});
+
+        // then
         assertThat(throwable).isNotNull();
         assertThat(throwable).isInstanceOf(EntityNotFoundException.class);
 

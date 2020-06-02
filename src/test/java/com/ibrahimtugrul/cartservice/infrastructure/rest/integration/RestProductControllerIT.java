@@ -112,6 +112,24 @@ public class RestProductControllerIT extends BaseWebIT {
         resultActions.andExpect(jsonPath("$.title", is(product.getTitle())));
     }
 
+    @Test
+    public void should_delete_product_when_product_found() throws  Exception {
+        final Product product = Product.builder()
+                .title("product")
+                .price(15.0)
+                .categoryId(2L)
+                .build();
+
+        productRepository.save(product);
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(delete(StringUtils.join(PRODUCT_URL, "/{productId}")
+                , product.getId()));
+
+        // then
+        resultActions.andExpect(status().isOk());
+    }
+
     @AfterEach
     public void tearDown() {
         productRepository.deleteAll();

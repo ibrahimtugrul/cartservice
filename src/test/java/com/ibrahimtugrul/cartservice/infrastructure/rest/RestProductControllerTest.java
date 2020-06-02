@@ -23,8 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -250,5 +249,19 @@ public class RestProductControllerTest {
         resultActions.andExpect(jsonPath("$.categoryId", is(productResponse.getCategoryId().intValue())));
         resultActions.andExpect(jsonPath("$.title", is(productResponse.getTitle())));
         resultActions.andExpect(jsonPath("$.price", is(productResponse.getPrice().intValue())));
+    }
+
+    @Test
+    public void should_delete_product_when_product_found_with_id() throws Exception {
+        // given
+        final Long productId = 1L;
+        
+        // when
+        final ResultActions resultActions =  mockMvc.perform(
+                delete(StringUtils.join(PRODUCT_URL, "/{productId}"), productId));
+
+        // then
+        resultActions.andExpect(status().isOk());
+        verify(productManager, times(1)).delete(productId);
     }
 }

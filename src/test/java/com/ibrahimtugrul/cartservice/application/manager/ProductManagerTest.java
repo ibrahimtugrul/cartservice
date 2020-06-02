@@ -147,4 +147,18 @@ public class ProductManagerTest {
         assertThat(productResponse1.getId()).isEqualTo(productVo.getId());
         assertThat(productResponse1.getCategoryId()).isEqualTo(productVo.getCategoryId());
     }
+
+    @Test
+    public void should_delete_product_when_product_found() {
+        // given
+        final Long id = 1L;
+
+        // when
+        productManager.delete(id);
+
+        // then
+        final InOrder inOrder = Mockito.inOrder(productService);
+        inOrder.verify(productService).delete(id);
+        inOrder.verifyNoMoreInteractions();
+    }
 }
