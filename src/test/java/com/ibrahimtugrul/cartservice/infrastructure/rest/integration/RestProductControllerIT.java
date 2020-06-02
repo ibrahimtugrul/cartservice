@@ -4,6 +4,7 @@ import com.ibrahimtugrul.cartservice.application.model.request.ProductCreateRequ
 import com.ibrahimtugrul.cartservice.domain.entity.Product;
 import com.ibrahimtugrul.cartservice.domain.repository.ProductRepository;
 import com.ibrahimtugrul.cartservice.infrastructure.rest.util.WebTestUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -31,6 +33,7 @@ public class RestProductControllerIT extends BaseWebIT {
     public void setup() {// to delete initial values for integration test health
         productRepository.deleteAll();
     }
+
     @Test
     public void should_save_product() throws Exception {
         // given
@@ -60,6 +63,53 @@ public class RestProductControllerIT extends BaseWebIT {
         assertThat(savedProduct.getCategoryId()).isEqualTo(productCreateRequest.getCategoryId());
 
         resultActions.andExpect(jsonPath("$.id", is(savedProduct.getId().intValue())));
+    }
+
+    @Test
+    public void should_return_product_list() throws Exception {
+        // given
+        final Product product = Product.builder()
+                .title("product")
+                .price(15.0)
+                .categoryId(2L)
+                .build();
+
+        productRepository.save(product);
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(get(PRODUCT_URL)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$", hasSize(1)));
+        resultActions.andExpect(jsonPath("$[0].id", is(product.getId().intValue())));
+        resultActions.andExpect(jsonPath("$[0].price", is(new BigDecimal(product.getPrice()).intValue())));
+        resultActions.andExpect(jsonPath("$[0].categoryId", is(product.getCategoryId().intValue())));
+        resultActions.andExpect(jsonPath("$[0].title", is(product.getTitle())));
+    }
+
+    @Test
+    public void should_return_product_when_product_found() throws Exception {
+        // given
+        final Product product = Product.builder()
+                .title("product")
+                .price(15.0)
+                .categoryId(2L)
+                .build();
+
+        productRepository.save(product);
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(get(StringUtils.join(PRODUCT_URL, "/{productId}")
+                , product.getId()));
+
+        // then
+        resultActions.andExpect(status().isOk());
+        resultActions.andExpect(jsonPath("$.id", is(product.getId().intValue())));
+        resultActions.andExpect(jsonPath("$.price", is(new BigDecimal(product.getPrice()).intValue())));
+        resultActions.andExpect(jsonPath("$.categoryId", is(product.getCategoryId().intValue())));
+        resultActions.andExpect(jsonPath("$.title", is(product.getTitle())));
     }
 
     @AfterEach
