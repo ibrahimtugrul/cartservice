@@ -24,7 +24,7 @@ public class CampaignCreateRequestToVoConverterCampaignCreateRequestToVoConverte
         final CampaignCreateRequest campaignCreateRequest = CampaignCreateRequest.builder()
                 .minimumBuyingRule(3)
                 .discountType("amount")
-                .discount(15.0)
+                .discount("15.0")
                 .categoryId(2)
                 .build();
 
@@ -34,7 +34,7 @@ public class CampaignCreateRequestToVoConverterCampaignCreateRequestToVoConverte
         // then
         assertThat(campaignCreateVo).isNotNull();
         assertThat(campaignCreateVo.getDiscountType().toString()).isEqualTo(campaignCreateRequest.getDiscountType().toUpperCase());
-        assertThat(campaignCreateVo.getDiscount()).isEqualTo(campaignCreateRequest.getDiscount());
+        assertThat(campaignCreateVo.getDiscount()).isEqualTo(Double.valueOf(campaignCreateRequest.getDiscount()));
         assertThat(campaignCreateVo.getCategoryId()).isEqualTo(campaignCreateRequest.getCategoryId());
         assertThat(campaignCreateVo.getMinimumBuyingRule()).isEqualTo(campaignCreateRequest.getMinimumBuyingRule());
     }

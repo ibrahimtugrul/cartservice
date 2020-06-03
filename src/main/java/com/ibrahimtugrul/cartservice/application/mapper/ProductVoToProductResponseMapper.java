@@ -13,9 +13,9 @@ public class ProductVoToProductResponseMapper implements Function<ProductVo, Pro
     public ProductResponse apply(final ProductVo productVo) {
         return ProductResponse.builder()
                 .title(productVo.getTitle())
-                .price(new BigDecimal(productVo.getPrice()))
-                .id(productVo.getId())
-                .categoryId(productVo.getCategoryId())
+                .price(String.valueOf(productVo.getPrice()))
+                .id(String.valueOf(productVo.getId()))
+                .categoryId(String.valueOf(productVo.getCategoryId()))
                 .build();
     }
 }

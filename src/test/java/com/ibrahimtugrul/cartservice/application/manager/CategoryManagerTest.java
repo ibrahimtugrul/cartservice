@@ -68,7 +68,7 @@ public class CategoryManagerTest {
         inOrder.verifyNoMoreInteractions();
 
         assertThat(responseEntity).isNotNull();
-        assertThat(responseEntity.getId()).isEqualTo(categoryId);
+        assertThat(responseEntity.getId()).isEqualTo(String.valueOf(categoryId));
     }
 
     @Test
@@ -81,9 +81,9 @@ public class CategoryManagerTest {
                 .build();
 
         final CategoryResponse categoryResponse = CategoryResponse.builder()
-                .id(1L)
+                .id("1")
                 .title("product")
-                .parentId(1L)
+                .parentId("1")
                 .build();
 
         // when
@@ -101,8 +101,8 @@ public class CategoryManagerTest {
         assertThat(categoryResponseList).isNotEmpty();
         assertThat(categoryResponseList.size()).isEqualTo(1);
         assertThat(categoryResponseList.get(0).getTitle()).isEqualTo(categoryVo.getTitle());
-        assertThat(categoryResponseList.get(0).getId()).isEqualTo(categoryVo.getId());
-        assertThat(categoryResponseList.get(0).getParentId()).isEqualTo(categoryVo.getParentId());
+        assertThat(categoryResponseList.get(0).getId()).isEqualTo(String.valueOf(categoryVo.getId()));
+        assertThat(categoryResponseList.get(0).getParentId()).isEqualTo(String.valueOf(categoryVo.getParentId()));
     }
 
     @Test
@@ -116,9 +116,9 @@ public class CategoryManagerTest {
                 .build();
 
         final CategoryResponse categoryResponse = CategoryResponse.builder()
-                .id(1L)
+                .id("1")
                 .title("product")
-                .parentId(1L)
+                .parentId("1")
                 .build();
 
         // when
@@ -135,8 +135,8 @@ public class CategoryManagerTest {
 
         assertThat(categoryResponse1).isNotNull();
         assertThat(categoryResponse1.getTitle()).isEqualTo(categoryVo.getTitle());
-        assertThat(categoryResponse1.getId()).isEqualTo(categoryVo.getId());
-        assertThat(categoryResponse1.getParentId()).isEqualTo(categoryVo.getParentId());
+        assertThat(categoryResponse1.getId()).isEqualTo(String.valueOf(categoryVo.getId()));
+        assertThat(categoryResponse1.getParentId()).isEqualTo(String.valueOf(categoryVo.getParentId()));
     }
 
     @Test

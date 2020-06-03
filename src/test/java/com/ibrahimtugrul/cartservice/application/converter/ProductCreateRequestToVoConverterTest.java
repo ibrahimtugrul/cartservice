@@ -22,7 +22,7 @@ public class ProductCreateRequestToVoConverterTest {
     public void should_convert() {
         // given
         final ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
-                .price(new BigDecimal(15.0))
+                .price("15.0")
                 .title("product")
                 .categoryId(1L)
                 .build();

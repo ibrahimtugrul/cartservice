@@ -34,7 +34,7 @@ public class RestCategoryControllerTest {
 
     private MockMvc mockMvc;
 
-    private static final String CATEGORY_URL = "/cartservice/v1/category";
+    private static final String CATEGORY_URL = "/api/v1/category";
     private static final String ERR_MISSING_CATEGORY_TITLE= "category.validation.required.title";
 
     @BeforeEach
@@ -52,7 +52,7 @@ public class RestCategoryControllerTest {
                 .build();
 
         final IdResponse categoryResponse = IdResponse.builder()
-                .id(1L)
+                .id("1")
                 .build();
 
         // when
@@ -64,7 +64,7 @@ public class RestCategoryControllerTest {
 
         // then
         resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.id", is(1)));
+        resultActions.andExpect(jsonPath("$.id", is("1")));
         verify(categoryManager, times(1)).create(categoryCreateRequest);
     }
 
@@ -128,14 +128,14 @@ public class RestCategoryControllerTest {
     public void should_return_all_categories() throws Exception {
         // given
         final CategoryResponse categoryResponse = CategoryResponse.builder()
-                .parentId(2L)
-                .id(1L)
+                .parentId("2")
+                .id("1")
                 .title("category")
                 .build();
 
         final CategoryResponse categoryResponse1 = CategoryResponse.builder()
-                .parentId(1L)
-                .id(2L)
+                .parentId("1")
+                .id("2")
                 .title("category1")
                 .build();
 
@@ -148,11 +148,11 @@ public class RestCategoryControllerTest {
         // then
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$", hasSize(2)));
-        resultActions.andExpect(jsonPath("$[0].id", is(categoryResponse.getId().intValue())));
-        resultActions.andExpect(jsonPath("$[0].parentId", is(categoryResponse.getParentId().intValue())));
+        resultActions.andExpect(jsonPath("$[0].id", is(categoryResponse.getId())));
+        resultActions.andExpect(jsonPath("$[0].parentId", is(categoryResponse.getParentId())));
         resultActions.andExpect(jsonPath("$[0].title", is(categoryResponse.getTitle())));
-        resultActions.andExpect(jsonPath("$[1].id", is(categoryResponse1.getId().intValue())));
-        resultActions.andExpect(jsonPath("$[1].parentId", is(categoryResponse1.getParentId().intValue())));
+        resultActions.andExpect(jsonPath("$[1].id", is(categoryResponse1.getId())));
+        resultActions.andExpect(jsonPath("$[1].parentId", is(categoryResponse1.getParentId())));
         resultActions.andExpect(jsonPath("$[1].title", is(categoryResponse1.getTitle())));
     }
 
@@ -162,8 +162,8 @@ public class RestCategoryControllerTest {
         final Long categoryId = 1L;
 
         final CategoryResponse categoryResponse = CategoryResponse.builder()
-                .parentId(2L)
-                .id(1L)
+                .parentId("2")
+                .id("1")
                 .title("category")
                 .build();
 
@@ -175,8 +175,8 @@ public class RestCategoryControllerTest {
 
         // then
         resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.id", is(categoryResponse.getId().intValue())));
-        resultActions.andExpect(jsonPath("$.parentId", is(categoryResponse.getParentId().intValue())));
+        resultActions.andExpect(jsonPath("$.id", is(categoryResponse.getId())));
+        resultActions.andExpect(jsonPath("$.parentId", is(categoryResponse.getParentId())));
         resultActions.andExpect(jsonPath("$.title", is(categoryResponse.getTitle())));
     }
 

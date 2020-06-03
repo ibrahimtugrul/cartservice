@@ -27,7 +27,7 @@ public class RestProductControllerIT extends BaseWebIT {
     @Autowired
     private ProductRepository productRepository;
 
-    private static final String PRODUCT_URL = "/cartservice/v1/product";
+    private static final String PRODUCT_URL = "/api/v1/product";
 
     @BeforeEach
     public void setup() {// to delete initial values for integration test health
@@ -39,7 +39,7 @@ public class RestProductControllerIT extends BaseWebIT {
         // given
         final ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
                 .title("product")
-                .price(new BigDecimal(15))
+                .price("15")
                 .categoryId(2L)
                 .build();
 
@@ -62,7 +62,7 @@ public class RestProductControllerIT extends BaseWebIT {
         assertThat(savedProduct.getTitle()).isEqualTo(productCreateRequest.getTitle());
         assertThat(savedProduct.getCategoryId()).isEqualTo(productCreateRequest.getCategoryId());
 
-        resultActions.andExpect(jsonPath("$.id", is(savedProduct.getId().intValue())));
+        resultActions.andExpect(jsonPath("$.id", is(String.valueOf(savedProduct.getId()))));
     }
 
     @Test
@@ -83,9 +83,9 @@ public class RestProductControllerIT extends BaseWebIT {
         // then
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$", hasSize(1)));
-        resultActions.andExpect(jsonPath("$[0].id", is(product.getId().intValue())));
-        resultActions.andExpect(jsonPath("$[0].price", is(new BigDecimal(product.getPrice()).intValue())));
-        resultActions.andExpect(jsonPath("$[0].categoryId", is(product.getCategoryId().intValue())));
+        resultActions.andExpect(jsonPath("$[0].id", is(String.valueOf(product.getId()))));
+        resultActions.andExpect(jsonPath("$[0].price", is(String.valueOf(product.getPrice()))));
+        resultActions.andExpect(jsonPath("$[0].categoryId", is(String.valueOf(product.getCategoryId()))));
         resultActions.andExpect(jsonPath("$[0].title", is(product.getTitle())));
     }
 
@@ -106,9 +106,9 @@ public class RestProductControllerIT extends BaseWebIT {
 
         // then
         resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.id", is(product.getId().intValue())));
-        resultActions.andExpect(jsonPath("$.price", is(new BigDecimal(product.getPrice()).intValue())));
-        resultActions.andExpect(jsonPath("$.categoryId", is(product.getCategoryId().intValue())));
+        resultActions.andExpect(jsonPath("$.id", is(String.valueOf(product.getId()))));
+        resultActions.andExpect(jsonPath("$.price", is(String.valueOf(product.getPrice()))));
+        resultActions.andExpect(jsonPath("$.categoryId", is(String.valueOf(product.getCategoryId()))));
         resultActions.andExpect(jsonPath("$.title", is(product.getTitle())));
     }
 

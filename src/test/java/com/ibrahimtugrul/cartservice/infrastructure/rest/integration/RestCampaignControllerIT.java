@@ -26,7 +26,7 @@ public class RestCampaignControllerIT extends BaseWebIT {
     @Autowired
     private CampaignRepository campaignRepository;
 
-    private static final String CATEGORY_URL = "/cartservice/v1/campaign";
+    private static final String CATEGORY_URL = "/api/v1/campaign";
 
     @BeforeEach
     public void setup() {// to delete initial values for integration test health
@@ -38,7 +38,7 @@ public class RestCampaignControllerIT extends BaseWebIT {
         // given
         final CampaignCreateRequest campaignCreateRequest = CampaignCreateRequest.builder()
                 .categoryId(2L)
-                .discount(15.0)
+                .discount("15.0")
                 .discountType("AMOUNT")
                 .minimumBuyingRule(3)
                 .build();
@@ -58,12 +58,12 @@ public class RestCampaignControllerIT extends BaseWebIT {
 
         final Campaign savedCampaign = campaignList.get(0);
 
-        assertThat(savedCampaign.getDiscount()).isEqualTo(campaignCreateRequest.getDiscount());
+        assertThat(savedCampaign.getDiscount()).isEqualTo(Double.valueOf(campaignCreateRequest.getDiscount()));
         assertThat(savedCampaign.getDiscountType().toString()).isEqualTo(campaignCreateRequest.getDiscountType());
         assertThat(savedCampaign.getCategoryId()).isEqualTo(campaignCreateRequest.getCategoryId());
         assertThat(savedCampaign.getMinimumBuyingRule()).isEqualTo(campaignCreateRequest.getMinimumBuyingRule());
 
-        resultActions.andExpect(jsonPath("$.id", is(savedCampaign.getId().intValue())));
+        resultActions.andExpect(jsonPath("$.id", is(String.valueOf(savedCampaign.getId()))));
     }
 
     @Test
@@ -85,10 +85,10 @@ public class RestCampaignControllerIT extends BaseWebIT {
         // then
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$", hasSize(1)));
-        resultActions.andExpect(jsonPath("$[0].id", is(campaign.getId().intValue())));
-        resultActions.andExpect(jsonPath("$[0].categoryId", is(campaign.getCategoryId().intValue())));
-        resultActions.andExpect(jsonPath("$[0].minimumBuyingRule", is(campaign.getMinimumBuyingRule())));
-        resultActions.andExpect(jsonPath("$[0].discount", is(campaign.getDiscount())));
+        resultActions.andExpect(jsonPath("$[0].id", is(String.valueOf(campaign.getId()))));
+        resultActions.andExpect(jsonPath("$[0].categoryId", is(String.valueOf(campaign.getCategoryId()))));
+        resultActions.andExpect(jsonPath("$[0].minimumBuyingRule", is(String.valueOf(campaign.getMinimumBuyingRule()))));
+        resultActions.andExpect(jsonPath("$[0].discount", is(String.valueOf(campaign.getDiscount()))));
         resultActions.andExpect(jsonPath("$[0].discountType", is(campaign.getDiscountType().toString())));
     }
 
@@ -110,10 +110,10 @@ public class RestCampaignControllerIT extends BaseWebIT {
 
         // then
         resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.id", is(campaign.getId().intValue())));
-        resultActions.andExpect(jsonPath("$.categoryId", is(campaign.getCategoryId().intValue())));
-        resultActions.andExpect(jsonPath("$.minimumBuyingRule", is(campaign.getMinimumBuyingRule())));
-        resultActions.andExpect(jsonPath("$.discount", is(campaign.getDiscount())));
+        resultActions.andExpect(jsonPath("$.id", is(String.valueOf(campaign.getId()))));
+        resultActions.andExpect(jsonPath("$.categoryId", is(String.valueOf(campaign.getCategoryId()))));
+        resultActions.andExpect(jsonPath("$.minimumBuyingRule", is(String.valueOf(campaign.getMinimumBuyingRule()))));
+        resultActions.andExpect(jsonPath("$.discount", is(String.valueOf(campaign.getDiscount()))));
         resultActions.andExpect(jsonPath("$.discountType", is(campaign.getDiscountType().toString())));
     }
 

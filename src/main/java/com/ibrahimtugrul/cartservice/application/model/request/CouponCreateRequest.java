@@ -7,20 +7,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CampaignCreateRequest {
-    @Min(value =1, message = "campaign.validation.required.minimumBuyingRule")
-    private int minimumBuyingRule;
-    @Min(value = 1, message = "campaign.validation.required.category")
-    private long categoryId;
-    @NotBlank(message = "campaign.validation.required.discount")
+public class CouponCreateRequest {
+    @NotBlank(message = "coupon.validation.required.minimumAmount")
+    private String minimumAmount;
+    @NotBlank(message = "coupon.validation.required.discount")
     private String discount;
-    @ValidateEnum(enumClazz = DiscountType.class, message = "campaign.validation.required.discountType")
+    @ValidateEnum(enumClazz = DiscountType.class, message = "coupon.validation.required.discountType")
     private String discountType;
 }

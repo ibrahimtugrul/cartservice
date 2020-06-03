@@ -14,7 +14,7 @@ public class CampaignCreateRequestToVoConverter implements Function<CampaignCrea
     public CampaignCreateVo apply(final CampaignCreateRequest campaignCreateRequest) {
         return CampaignCreateVo.builder()
                 .categoryId(campaignCreateRequest.getCategoryId())
-                .discount(campaignCreateRequest.getDiscount())
+                .discount(Double.valueOf(campaignCreateRequest.getDiscount()))
                 .discountType(DiscountType.valueOf(campaignCreateRequest.getDiscountType().toUpperCase()))
                 .minimumBuyingRule(campaignCreateRequest.getMinimumBuyingRule())
                 .build();

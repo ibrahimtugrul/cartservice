@@ -31,9 +31,9 @@ public class ProductVoToProductResponseMapperTest {
 
         // then
         assertThat(productResponse).isNotNull();
-        assertThat(productResponse.getCategoryId()).isEqualTo(productVo.getCategoryId());
-        assertThat(productResponse.getId()).isEqualTo(productVo.getId());
-        assertThat(productResponse.getPrice().doubleValue()).isEqualTo(productVo.getPrice());
+        assertThat(productResponse.getCategoryId()).isEqualTo(String.valueOf(productVo.getCategoryId()));
+        assertThat(productResponse.getId()).isEqualTo(String.valueOf(productVo.getId()));
+        assertThat(productResponse.getPrice()).isEqualTo(String.valueOf(productVo.getPrice()));
         assertThat(productResponse.getTitle()).isEqualTo(productVo.getTitle());
     }
 }

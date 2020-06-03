@@ -5,18 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProductResponse {
-    private Long id;
+    private String id;
 
     private String title;
 
-    private BigDecimal price;
+    private String price;
 
-    private Long categoryId;
+    private String categoryId;
 }

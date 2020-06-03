@@ -25,7 +25,7 @@ public class CategoryManager {
     public IdResponse create(final CategoryCreateRequest categoryCreateRequest) {
         final CategoryCreateVo categoryCreateVo = categoryCreateRequestToVoConverter.convert(categoryCreateRequest);
         final long categoryId = categoryService.create(categoryCreateVo);
-        return IdResponse.builder().id(categoryId).build();
+        return IdResponse.builder().id(String.valueOf(categoryId)).build();
     }
 
     public List<CategoryResponse> listAll() {

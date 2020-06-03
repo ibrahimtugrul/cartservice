@@ -11,8 +11,8 @@ public class CategoryVoToCategoryResponseMapper implements Function<CategoryVo, 
     @Override
     public CategoryResponse apply(final CategoryVo categoryVo) {
         return CategoryResponse.builder()
-                .id(categoryVo.getId())
-                .parentId(categoryVo.getParentId())
+                .id(String.valueOf(categoryVo.getId()))
+                .parentId(String.valueOf(categoryVo.getParentId()))
                 .title(categoryVo.getTitle())
                 .build();
     }

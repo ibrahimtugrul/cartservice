@@ -33,10 +33,10 @@ public class CampaignVoToCampaignResponseMapperTest {
 
         // then
         assertThat(campaignResponse).isNotNull();
-        assertThat(campaignResponse.getDiscountType()).isEqualTo(campaignVo.getDiscountType());
-        assertThat(campaignResponse.getDiscount()).isEqualTo(campaignVo.getDiscount());
-        assertThat(campaignResponse.getCategoryId()).isEqualTo(campaignVo.getCategoryId());
-        assertThat(campaignResponse.getId()).isEqualTo(campaignVo.getId());
-        assertThat(campaignResponse.getMinimumBuyingRule()).isEqualTo(campaignVo.getMinimumBuyingRule());
+        assertThat(campaignResponse.getDiscountType()).isEqualTo(campaignVo.getDiscountType().toString());
+        assertThat(campaignResponse.getDiscount()).isEqualTo(String.valueOf(campaignVo.getDiscount()));
+        assertThat(campaignResponse.getCategoryId()).isEqualTo(String.valueOf(campaignVo.getCategoryId()));
+        assertThat(campaignResponse.getId()).isEqualTo(String.valueOf(campaignVo.getId()));
+        assertThat(campaignResponse.getMinimumBuyingRule()).isEqualTo(String.valueOf(campaignVo.getMinimumBuyingRule()));
     }
 }

@@ -25,7 +25,7 @@ public class CampaignManager {
     public IdResponse create(final CampaignCreateRequest campaignCreateRequest) {
         final CampaignCreateVo campaignCreateVo = campaignCreateRequestToVoConverter.convert(campaignCreateRequest);
         final long campaignId = campaignService.create(campaignCreateVo);
-        return IdResponse.builder().id(campaignId).build();
+        return IdResponse.builder().id(String.valueOf(campaignId)).build();
     }
 
     public List<CampaignResponse> listAll() {

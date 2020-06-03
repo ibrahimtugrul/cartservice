@@ -25,7 +25,7 @@ public class RestCategoryControllerIT extends BaseWebIT {
     @Autowired
     private CategoryRepository categoryRepository;
 
-    private static final String CATEGORY_URL = "/cartservice/v1/category";
+    private static final String CATEGORY_URL = "/api/v1/category";
 
     @BeforeEach
     public void setup() {// to delete initial values for integration test health
@@ -58,7 +58,7 @@ public class RestCategoryControllerIT extends BaseWebIT {
         assertThat(savedCategory.getTitle()).isEqualTo(categoryCreateRequest.getTitle());
         assertThat(savedCategory.getParentId()).isEqualTo(categoryCreateRequest.getParentId());
 
-        resultActions.andExpect(jsonPath("$.id", is(savedCategory.getId().intValue())));
+        resultActions.andExpect(jsonPath("$.id", is(String.valueOf(savedCategory.getId()))));
     }
 
     @Test
@@ -78,8 +78,8 @@ public class RestCategoryControllerIT extends BaseWebIT {
         // then
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$", hasSize(1)));
-        resultActions.andExpect(jsonPath("$[0].id", is(category.getId().intValue())));
-        resultActions.andExpect(jsonPath("$[0].parentId", is(category.getParentId().intValue())));
+        resultActions.andExpect(jsonPath("$[0].id", is(String.valueOf(category.getId()))));
+        resultActions.andExpect(jsonPath("$[0].parentId", is(String.valueOf(category.getParentId()))));
         resultActions.andExpect(jsonPath("$[0].title", is(category.getTitle())));
     }
 
@@ -99,8 +99,8 @@ public class RestCategoryControllerIT extends BaseWebIT {
 
         // then
         resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.id", is(category.getId().intValue())));
-        resultActions.andExpect(jsonPath("$.parentId", is(category.getParentId().intValue())));
+        resultActions.andExpect(jsonPath("$.id", is(String.valueOf(category.getId()))));
+        resultActions.andExpect(jsonPath("$.parentId", is(String.valueOf(category.getParentId()))));
         resultActions.andExpect(jsonPath("$.title", is(category.getTitle())));
     }
 

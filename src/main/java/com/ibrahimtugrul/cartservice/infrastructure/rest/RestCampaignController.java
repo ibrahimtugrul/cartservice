@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cartservice/v1/campaign")
+@RequestMapping("/api/v1/campaign")
 @RequiredArgsConstructor
 public class RestCampaignController implements CampaignController {
 

@@ -35,7 +35,7 @@ public class RestProductControllerTest {
 
     private MockMvc mockMvc;
 
-    private static final String PRODUCT_URL = "/cartservice/v1/product";
+    private static final String PRODUCT_URL = "/api/v1/product";
     private static final String ERR_MISSING_PRODUCT_TITLE= "product.validation.required.title";
     private static final String ERR_MISSING_PRODUCT_PRICE= "product.validation.required.price";
     private static final String ERR_INVALID_PRODUCT_CATEGORY= "product.validation.required.category";
@@ -51,12 +51,12 @@ public class RestProductControllerTest {
         // given
         final ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
                 .title("product")
-                .price(new BigDecimal(15))
+                .price("15")
                 .categoryId(2L)
                 .build();
 
         final IdResponse productResponse = IdResponse.builder()
-                .id(1L)
+                .id("1")
                 .build();
 
         // when
@@ -68,7 +68,7 @@ public class RestProductControllerTest {
         
         // then
         resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.id", is(1)));
+        resultActions.andExpect(jsonPath("$.id", is("1")));
         verify(productManager, times(1)).create(productCreateRequest);
     }
     
@@ -78,7 +78,7 @@ public class RestProductControllerTest {
         // given
         final ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
                 .title(StringUtils.EMPTY)
-                .price(new BigDecimal(15))
+                .price("15")
                 .categoryId(2L)
                 .build();
 
@@ -97,7 +97,7 @@ public class RestProductControllerTest {
 
         // given
         final ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
-                .price(new BigDecimal(15))
+                .price("15")
                 .categoryId(2L)
                 .build();
 
@@ -117,7 +117,7 @@ public class RestProductControllerTest {
         // given
         final ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
                 .title(StringUtils.SPACE)
-                .price(new BigDecimal(15))
+                .price("15")
                 .categoryId(2L)
                 .build();
 
@@ -151,13 +151,33 @@ public class RestProductControllerTest {
     }
 
     @Test
-    public void should_return_bad_request_when_product_price_is_lower_than_0_1() throws Exception {
+    public void should_return_bad_request_when_product_price_is_empty() throws Exception {
 
         // given
         final ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
                 .title("product")
-                .price(new BigDecimal(0.0))
                 .categoryId(2L)
+                .price(StringUtils.EMPTY)
+                .build();
+
+        // when
+        final ResultActions resultActions =  mockMvc.perform(post(PRODUCT_URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(WebTestUtil.convertObjectToJsonBytes(productCreateRequest)));
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+        assertThat(resultActions.andReturn().getResolvedException().getLocalizedMessage().contains(ERR_MISSING_PRODUCT_PRICE)).isTrue();
+    }
+
+    @Test
+    public void should_return_bad_request_when_product_price_is_blank() throws Exception {
+
+        // given
+        final ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
+                .title("product")
+                .categoryId(2L)
+                .price(StringUtils.SPACE)
                 .build();
 
         // when
@@ -176,7 +196,7 @@ public class RestProductControllerTest {
         // given
         final ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
                 .title("product")
-                .price(new BigDecimal(15))
+                .price("15")
                 .build();
 
         // when
@@ -193,16 +213,16 @@ public class RestProductControllerTest {
     public void should_return_all_products() throws Exception {
         // given
         final ProductResponse productResponse = ProductResponse.builder()
-                .categoryId(2L)
-                .id(1L)
-                .price(new BigDecimal(15.0))
+                .categoryId("2")
+                .id("1")
+                .price("15.0")
                 .title("product")
                 .build();
 
         final ProductResponse productResponse1 = ProductResponse.builder()
-                .categoryId(1L)
-                .id(2L)
-                .price(new BigDecimal(14.0))
+                .categoryId("1")
+                .id("2")
+                .price("14.0")
                 .title("product1")
                 .build();
         
@@ -215,14 +235,14 @@ public class RestProductControllerTest {
         // then
         resultActions.andExpect(status().isOk());
         resultActions.andExpect(jsonPath("$", hasSize(2)));
-        resultActions.andExpect(jsonPath("$[0].id", is(productResponse.getId().intValue())));
-        resultActions.andExpect(jsonPath("$[0].categoryId", is(productResponse.getCategoryId().intValue())));
+        resultActions.andExpect(jsonPath("$[0].id", is(productResponse.getId())));
+        resultActions.andExpect(jsonPath("$[0].categoryId", is(productResponse.getCategoryId())));
         resultActions.andExpect(jsonPath("$[0].title", is(productResponse.getTitle())));
-        resultActions.andExpect(jsonPath("$[0].price", is(productResponse.getPrice().intValue())));
-        resultActions.andExpect(jsonPath("$[1].id", is(productResponse1.getId().intValue())));
-        resultActions.andExpect(jsonPath("$[1].categoryId", is(productResponse1.getCategoryId().intValue())));
+        resultActions.andExpect(jsonPath("$[0].price", is(productResponse.getPrice())));
+        resultActions.andExpect(jsonPath("$[1].id", is(productResponse1.getId())));
+        resultActions.andExpect(jsonPath("$[1].categoryId", is(productResponse1.getCategoryId())));
         resultActions.andExpect(jsonPath("$[1].title", is(productResponse1.getTitle())));
-        resultActions.andExpect(jsonPath("$[1].price", is(productResponse1.getPrice().intValue())));
+        resultActions.andExpect(jsonPath("$[1].price", is(productResponse1.getPrice())));
     }
     
     @Test
@@ -231,9 +251,9 @@ public class RestProductControllerTest {
         final Long productId = 1L;
 
         final ProductResponse productResponse = ProductResponse.builder()
-                .categoryId(2L)
-                .id(1L)
-                .price(new BigDecimal(15.0))
+                .categoryId("2")
+                .id("1")
+                .price("15.0")
                 .title("product")
                 .build();
         
@@ -245,10 +265,10 @@ public class RestProductControllerTest {
 
         // then
         resultActions.andExpect(status().isOk());
-        resultActions.andExpect(jsonPath("$.id", is(productResponse.getId().intValue())));
-        resultActions.andExpect(jsonPath("$.categoryId", is(productResponse.getCategoryId().intValue())));
+        resultActions.andExpect(jsonPath("$.id", is(productResponse.getId())));
+        resultActions.andExpect(jsonPath("$.categoryId", is(productResponse.getCategoryId())));
         resultActions.andExpect(jsonPath("$.title", is(productResponse.getTitle())));
-        resultActions.andExpect(jsonPath("$.price", is(productResponse.getPrice().intValue())));
+        resultActions.andExpect(jsonPath("$.price", is(productResponse.getPrice())));
     }
 
     @Test

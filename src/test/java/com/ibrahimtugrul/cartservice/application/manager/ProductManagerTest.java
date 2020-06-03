@@ -45,7 +45,7 @@ public class ProductManagerTest {
     public void should_return_created_product_id_when_product_create_request_is_valid() {
         // given
         final ProductCreateRequest productCreateRequest = ProductCreateRequest.builder()
-                .price(new BigDecimal(15.0))
+                .price("15.0")
                 .title("product")
                 .categoryId(1L)
                 .build();
@@ -71,7 +71,7 @@ public class ProductManagerTest {
         inOrder.verifyNoMoreInteractions();
 
         assertThat(responseEntity).isNotNull();
-        assertThat(responseEntity.getId()).isEqualTo(productId);
+        assertThat(responseEntity.getId()).isEqualTo(String.valueOf(productId));
     }
 
     @Test
@@ -85,10 +85,10 @@ public class ProductManagerTest {
                 .build();
 
         final ProductResponse productResponse = ProductResponse.builder()
-                .id(1L)
-                .price(new BigDecimal(15.0))
+                .id("1")
+                .price("15.0")
                 .title("product")
-                .categoryId(1L)
+                .categoryId("1")
                 .build();
 
         // when
@@ -106,9 +106,9 @@ public class ProductManagerTest {
         assertThat(productResponseList).isNotEmpty();
         assertThat(productResponseList.size()).isEqualTo(1);
         assertThat(productResponseList.get(0).getTitle()).isEqualTo(productVo.getTitle());
-        assertThat(productResponseList.get(0).getPrice().doubleValue()).isEqualTo(productVo.getPrice());
-        assertThat(productResponseList.get(0).getId()).isEqualTo(productVo.getId());
-        assertThat(productResponseList.get(0).getCategoryId()).isEqualTo(productVo.getCategoryId());
+        assertThat(productResponseList.get(0).getPrice()).isEqualTo(String.valueOf(productVo.getPrice()));
+        assertThat(productResponseList.get(0).getId()).isEqualTo(String.valueOf(productVo.getId()));
+        assertThat(productResponseList.get(0).getCategoryId()).isEqualTo(String.valueOf(productVo.getCategoryId()));
     }
 
     @Test
@@ -123,10 +123,10 @@ public class ProductManagerTest {
                 .build();
 
         final ProductResponse productResponse = ProductResponse.builder()
-                .id(1L)
-                .price(new BigDecimal(15.0))
+                .id("1")
+                .price("15.0")
                 .title("product")
-                .categoryId(1L)
+                .categoryId("1")
                 .build();
 
         // when
@@ -143,9 +143,9 @@ public class ProductManagerTest {
 
         assertThat(productResponse1).isNotNull();
         assertThat(productResponse1.getTitle()).isEqualTo(productVo.getTitle());
-        assertThat(productResponse1.getPrice().doubleValue()).isEqualTo(productVo.getPrice());
-        assertThat(productResponse1.getId()).isEqualTo(productVo.getId());
-        assertThat(productResponse1.getCategoryId()).isEqualTo(productVo.getCategoryId());
+        assertThat(productResponse1.getPrice()).isEqualTo(String.valueOf(productVo.getPrice()));
+        assertThat(productResponse1.getId()).isEqualTo(String.valueOf(productVo.getId()));
+        assertThat(productResponse1.getCategoryId()).isEqualTo(String.valueOf(productVo.getCategoryId()));
     }
 
     @Test

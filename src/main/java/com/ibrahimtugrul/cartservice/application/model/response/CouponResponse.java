@@ -7,8 +7,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class IdResponse {
+@AllArgsConstructor
+public class CouponResponse {
     private String id;
+    private String minimumAmount;
+    private String discount;
+    private String discountType;
 }

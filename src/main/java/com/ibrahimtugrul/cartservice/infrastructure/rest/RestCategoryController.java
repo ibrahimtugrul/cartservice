@@ -14,7 +14,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cartservice/v1/category")
+@RequestMapping("/api/v1/category")
 @RequiredArgsConstructor
 public class RestCategoryController implements CategoryController {
 

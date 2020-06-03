@@ -25,7 +25,7 @@ public class ProductManager {
     public IdResponse create(final ProductCreateRequest productCreateRequest) {
         final ProductCreateVo productCreateVo = productCreateRequestToVoConverter.convert(productCreateRequest);
         final long productId = productService.create(productCreateVo);
-        return IdResponse.builder().id(productId).build();
+        return IdResponse.builder().id(String.valueOf(productId)).build();
     }
 
     public List<ProductResponse> listAll() {

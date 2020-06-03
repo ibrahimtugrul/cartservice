@@ -11,11 +11,11 @@ public class CampaignVoToCampaignResponseMapper implements Function<CampaignVo, 
     @Override
     public CampaignResponse apply(final CampaignVo campaignVo) {
         return CampaignResponse.builder()
-                .categoryId(campaignVo.getCategoryId())
-                .discount(campaignVo.getDiscount())
-                .discountType(campaignVo.getDiscountType())
-                .id(campaignVo.getId())
-                .minimumBuyingRule(campaignVo.getMinimumBuyingRule())
+                .categoryId(String.valueOf(campaignVo.getCategoryId()))
+                .discount(String.valueOf(campaignVo.getDiscount()))
+                .discountType(String.valueOf(campaignVo.getDiscountType()))
+                .id(String.valueOf(campaignVo.getId()))
+                .minimumBuyingRule(String.valueOf(campaignVo.getMinimumBuyingRule()))
                 .build();
     }
 }

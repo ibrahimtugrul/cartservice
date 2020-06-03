@@ -46,7 +46,7 @@ public class CampaignManagerTest {
         // given
         final CampaignCreateRequest campaignCreateRequest = CampaignCreateRequest.builder()
                 .categoryId(2L)
-                .discount(15.0)
+                .discount("15.0")
                 .discountType("AMOUNT")
                 .minimumBuyingRule(3)
                 .build();
@@ -73,7 +73,7 @@ public class CampaignManagerTest {
         inOrder.verifyNoMoreInteractions();
 
         assertThat(responseEntity).isNotNull();
-        assertThat(responseEntity.getId()).isEqualTo(campaignId);
+        assertThat(responseEntity.getId()).isEqualTo(String.valueOf(campaignId));
     }
 
     @Test
@@ -88,11 +88,11 @@ public class CampaignManagerTest {
                 .build();
 
         final CampaignResponse campaignResponse = CampaignResponse.builder()
-                .categoryId(1L)
-                .discount(15.0)
-                .discountType(DiscountType.RATE)
-                .id(1)
-                .minimumBuyingRule(3)
+                .categoryId("1")
+                .discount("15.0")
+                .discountType("RATE")
+                .id("1")
+                .minimumBuyingRule("3")
                 .build();
 
         // when
@@ -109,11 +109,11 @@ public class CampaignManagerTest {
 
         assertThat(campaignResponseList).isNotEmpty();
         assertThat(campaignResponseList.size()).isEqualTo(1);
-        assertThat(campaignResponseList.get(0).getMinimumBuyingRule()).isEqualTo(campaignVo.getMinimumBuyingRule());
-        assertThat(campaignResponseList.get(0).getId()).isEqualTo(campaignVo.getId());
-        assertThat(campaignResponseList.get(0).getCategoryId()).isEqualTo(campaignVo.getCategoryId());
-        assertThat(campaignResponseList.get(0).getDiscount()).isEqualTo(campaignVo.getDiscount());
-        assertThat(campaignResponseList.get(0).getDiscountType()).isEqualTo(campaignVo.getDiscountType());
+        assertThat(campaignResponseList.get(0).getMinimumBuyingRule()).isEqualTo(String.valueOf(campaignVo.getMinimumBuyingRule()));
+        assertThat(campaignResponseList.get(0).getId()).isEqualTo(String.valueOf(campaignVo.getId()));
+        assertThat(campaignResponseList.get(0).getCategoryId()).isEqualTo(String.valueOf(campaignVo.getCategoryId()));
+        assertThat(campaignResponseList.get(0).getDiscount()).isEqualTo(String.valueOf(campaignVo.getDiscount()));
+        assertThat(campaignResponseList.get(0).getDiscountType()).isEqualTo(campaignVo.getDiscountType().toString());
     }
 
     @Test
@@ -129,11 +129,11 @@ public class CampaignManagerTest {
                 .build();
 
         final CampaignResponse campaignResponse = CampaignResponse.builder()
-                .categoryId(1L)
-                .discount(15.0)
-                .discountType(DiscountType.RATE)
-                .id(1)
-                .minimumBuyingRule(3)
+                .categoryId("1")
+                .discount("15.0")
+                .discountType("RATE")
+                .id("1")
+                .minimumBuyingRule("3")
                 .build();
 
         // when
@@ -149,11 +149,11 @@ public class CampaignManagerTest {
         inOrder.verifyNoMoreInteractions();
 
         assertThat(campaignResponse1).isNotNull();
-        assertThat(campaignResponse1.getDiscountType()).isEqualTo(campaignVo.getDiscountType());
-        assertThat(campaignResponse1.getId()).isEqualTo(campaignVo.getId());
-        assertThat(campaignResponse1.getDiscount()).isEqualTo(campaignVo.getDiscount());
-        assertThat(campaignResponse1.getCategoryId()).isEqualTo(campaignVo.getCategoryId());
-        assertThat(campaignResponse1.getMinimumBuyingRule()).isEqualTo(campaignVo.getMinimumBuyingRule());
+        assertThat(campaignResponse1.getDiscountType()).isEqualTo(campaignVo.getDiscountType().toString());
+        assertThat(campaignResponse1.getId()).isEqualTo(String.valueOf(campaignVo.getId()));
+        assertThat(campaignResponse1.getDiscount()).isEqualTo(String.valueOf(campaignVo.getDiscount()));
+        assertThat(campaignResponse1.getCategoryId()).isEqualTo(String.valueOf(campaignVo.getCategoryId()));
+        assertThat(campaignResponse1.getMinimumBuyingRule()).isEqualTo(String.valueOf(campaignVo.getMinimumBuyingRule()));
     }
 
     @Test

@@ -30,8 +30,8 @@ public class CategoryVoToCategoryResponseMapperTest {
 
         // then
         assertThat(categoryResponse).isNotNull();
-        assertThat(categoryResponse.getParentId()).isEqualTo(categoryVo.getParentId());
-        assertThat(categoryResponse.getId()).isEqualTo(categoryVo.getId());
+        assertThat(categoryResponse.getParentId()).isEqualTo(String.valueOf(categoryVo.getParentId()));
+        assertThat(categoryResponse.getId()).isEqualTo(String.valueOf(categoryVo.getId()));
         assertThat(categoryResponse.getTitle()).isEqualTo(categoryVo.getTitle());
     }
 }

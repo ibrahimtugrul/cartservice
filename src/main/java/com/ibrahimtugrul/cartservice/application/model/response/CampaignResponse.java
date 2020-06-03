@@ -1,6 +1,5 @@
 package com.ibrahimtugrul.cartservice.application.model.response;
 
-import com.ibrahimtugrul.cartservice.domain.enums.DiscountType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CampaignResponse {
-    private long id;
-    private int minimumBuyingRule;
-    private long categoryId;
-    private double discount;
-    private DiscountType discountType;
+    private String id;
+    private String minimumBuyingRule;
+    private String categoryId;
+    private String discount;
+    private String discountType;
 }
