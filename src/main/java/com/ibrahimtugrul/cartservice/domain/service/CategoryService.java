@@ -32,7 +32,6 @@ public class CategoryService {
     public List<CategoryVo> listAll() {
         final List<Category> categoryList = categoryRepository.findAll();
         return categoryList.stream().map(category -> categoryToVoConverter.convert(category)).collect(Collectors.toList());
-
     }
 
     public CategoryVo retrieve(final Long categoryId) {

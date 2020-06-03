@@ -31,7 +31,6 @@ public class CategoryManager {
     public List<CategoryResponse> listAll() {
         final List<CategoryVo> categoryVoList = categoryService.listAll();
         return categoryVoList.stream().map(categoryVo -> categoryVoToCategoryResponseMapper.apply(categoryVo)).collect(Collectors.toList());
-
     }
 
     public CategoryResponse retrieveCategory(final Long categoryId) {

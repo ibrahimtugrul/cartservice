@@ -35,7 +35,7 @@ public class RestCategoryController implements CategoryController {
     }
 
     @Override
-    @GetMapping("/{categoryId}")
+    @GetMapping(value = "/{categoryId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CategoryResponse> retrieveCategory(@PathVariable("categoryId") final Long categoryId) {
         final CategoryResponse categoryResponse = categoryManager.retrieveCategory(categoryId);
         return ResponseEntity.ok(categoryResponse);
