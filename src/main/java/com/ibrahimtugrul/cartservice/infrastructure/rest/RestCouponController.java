@@ -36,7 +36,7 @@ public class RestCouponController implements CouponController {
 
     @Override
     @GetMapping(value = "/{couponId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CouponResponse> retrieveCategory(@PathVariable("couponId") final Long couponId) {
+    public ResponseEntity<CouponResponse> retrieveCoupon(@PathVariable("couponId") final Long couponId) {
         final CouponResponse couponResponse = couponManager.retrieveCoupon(couponId);
         return ResponseEntity.ok(couponResponse);
     }

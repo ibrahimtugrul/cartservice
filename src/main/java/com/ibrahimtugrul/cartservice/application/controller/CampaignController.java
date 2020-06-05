@@ -10,6 +10,6 @@ import java.util.List;
 public interface CampaignController {
     ResponseEntity<IdResponse> create(final CampaignCreateRequest campaignCreateRequest);
     ResponseEntity<List<CampaignResponse>> list();
-    ResponseEntity<CampaignResponse> retrieveCategory(final Long campaignId);
+    ResponseEntity<CampaignResponse> retrieveCampaign(final Long campaignId);
     void delete(final Long campaignId);
 }

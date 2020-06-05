@@ -10,6 +10,6 @@ import java.util.List;
 public interface CouponController {
     ResponseEntity<IdResponse> create(final CouponCreateRequest couponCreateRequest);
     ResponseEntity<List<CouponResponse>> list();
-    ResponseEntity<CouponResponse> retrieveCategory(final Long couponId);
+    ResponseEntity<CouponResponse> retrieveCoupon(final Long couponId);
     void delete(final Long couponId);
 }

@@ -36,7 +36,7 @@ public class RestCampaignController implements CampaignController {
 
     @Override
     @GetMapping(value = "/{campaignId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CampaignResponse> retrieveCategory(@PathVariable("campaignId") final Long campaignId) {
+    public ResponseEntity<CampaignResponse> retrieveCampaign(@PathVariable("campaignId") final Long campaignId) {
         final CampaignResponse campaignResponse = campaignManager.retrieveCampaign(campaignId);
         return ResponseEntity.ok(campaignResponse);
     }
