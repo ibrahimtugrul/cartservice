@@ -5,6 +5,7 @@ import com.ibrahimtugrul.cartservice.domain.entity.Cart;
 import com.ibrahimtugrul.cartservice.domain.entity.CartItem;
 import com.ibrahimtugrul.cartservice.domain.exception.EntityNotFoundException;
 import com.ibrahimtugrul.cartservice.domain.repository.CartRepository;
+import com.ibrahimtugrul.cartservice.domain.vo.CartAddItemVo;
 import com.ibrahimtugrul.cartservice.domain.vo.CartItemVo;
 import com.ibrahimtugrul.cartservice.domain.vo.CartVo;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +16,11 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -36,11 +40,17 @@ public class CartServiceTest {
     @Mock
     private CartToVoConverter cartToVoConverter;
 
+    @Mock
+    private DiscountCalculatorService discountCalculatorService;
+
+    @Captor
+    private ArgumentCaptor<CartItem> cartItemArgumentCaptor;
+
     private static final String ERR_ENTITY_NOT_FOUND = "domain.entity.notFound";
 
     @BeforeEach
     public void setup() {
-        this.cartService = new CartService(cartRepository, cartToVoConverter);
+        this.cartService = new CartService(cartRepository, cartToVoConverter, discountCalculatorService);
     }
 
     @Test
@@ -293,5 +303,193 @@ public class CartServiceTest {
 
         final EntityNotFoundException entityNotFoundException = (EntityNotFoundException) throwable;
         assertThat(entityNotFoundException.getLocalizedMessage().contains(ERR_ENTITY_NOT_FOUND)).isTrue();
+    }
+
+    @Test
+    public void should_add_item_when_cart_found_with_empty_list() {
+        // given
+        final Long cartId = 1L;
+        final CartAddItemVo cartAddItemVo = CartAddItemVo.builder()
+                .productId(1L)
+                .quantity(2L)
+                .build();
+
+        final Cart cart = Cart.builder()
+                .id(cartId)
+                .appliedCoupon(2L)
+                .totalAmountAfterDiscount(75.0)
+                .totalAmount(100.0)
+                .build();
+
+        final CartItem cartItem = CartItem.builder()
+                .productId(1L)
+                .quantity(2L)
+                .categoryId(3L)
+                .appliedCampaign(4L)
+                .totalAmount(100.0)
+                .totalAmountAfterCampaign(75.0)
+                .build();
+
+        // when
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(discountCalculatorService.createCartItemWithCampaign(any(CartItem.class))).thenReturn(cartItem);
+
+        cartService.addItem(cartId, cartAddItemVo);
+        // then
+        cartArgumentCaptor = ArgumentCaptor.forClass(Cart.class);
+        cartItemArgumentCaptor = ArgumentCaptor.forClass(CartItem.class);
+
+        final InOrder inOrder = Mockito.inOrder(cartRepository, discountCalculatorService);
+        inOrder.verify(cartRepository).findById(cartId);
+        inOrder.verify(discountCalculatorService).createCartItemWithCampaign(cartItemArgumentCaptor.capture());
+        inOrder.verify(cartRepository).save(cartArgumentCaptor.capture());
+        inOrder.verifyNoMoreInteractions();
+
+        assertThat(cartItemArgumentCaptor.getValue()).isNotNull();
+        final CartItem capturedCartItem = cartItemArgumentCaptor.getValue();
+
+        assertThat(capturedCartItem.getProductId()).isEqualTo(cartAddItemVo.getProductId());
+        assertThat(capturedCartItem.getQuantity()).isEqualTo(cartAddItemVo.getQuantity());
+
+        assertThat(cartArgumentCaptor.getValue()).isNotNull();
+        final Cart capturedCart = cartArgumentCaptor.getValue();
+
+        assertThat(capturedCart.getTotalAmountAfterDiscount()).isEqualTo(cartItem.getTotalAmountAfterCampaign());
+        assertThat(capturedCart.getTotalAmount()).isEqualTo(cartItem.getTotalAmount());
+        assertThat(capturedCart.getAppliedCoupon()).isEqualTo(cart.getAppliedCoupon());
+        assertThat(capturedCart.getItems()).isNotEmpty();
+        assertThat(capturedCart.getItems().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void should_add_item_when_cart_found_with_existing_list() {
+        // given
+        final Long cartId = 1L;
+        final CartAddItemVo cartAddItemVo = CartAddItemVo.builder()
+                .productId(1L)
+                .quantity(2L)
+                .build();
+
+        final CartItem cartItem = CartItem.builder()
+                .productId(1L)
+                .quantity(2L)
+                .categoryId(3L)
+                .appliedCampaign(4L)
+                .totalAmount(100.0)
+                .totalAmountAfterCampaign(75.0)
+                .build();
+
+        final Cart cart = Cart.builder()
+                .id(cartId)
+                .appliedCoupon(2L)
+                .totalAmountAfterDiscount(75.0)
+                .totalAmount(100.0)
+                .items(Stream.of(cartItem).collect(Collectors.toList()))
+                .build();
+
+        final CartItem cartItemReturned = CartItem.builder()
+                .productId(1L)
+                .quantity(2L)
+                .categoryId(3L)
+                .appliedCampaign(4L)
+                .totalAmount(100.0)
+                .totalAmountAfterCampaign(75.0)
+                .build();
+
+        // when
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(discountCalculatorService.createCartItemWithCampaign(any(CartItem.class))).thenReturn(cartItemReturned);
+
+        cartService.addItem(cartId, cartAddItemVo);
+        // then
+        cartArgumentCaptor = ArgumentCaptor.forClass(Cart.class);
+        cartItemArgumentCaptor = ArgumentCaptor.forClass(CartItem.class);
+
+        final InOrder inOrder = Mockito.inOrder(cartRepository, discountCalculatorService);
+        inOrder.verify(cartRepository).findById(cartId);
+        inOrder.verify(discountCalculatorService).createCartItemWithCampaign(cartItemArgumentCaptor.capture());
+        inOrder.verify(cartRepository).save(cartArgumentCaptor.capture());
+        inOrder.verifyNoMoreInteractions();
+
+        assertThat(cartItemArgumentCaptor.getValue()).isNotNull();
+        final CartItem capturedCartItem = cartItemArgumentCaptor.getValue();
+
+        assertThat(capturedCartItem.getProductId()).isEqualTo(cartAddItemVo.getProductId());
+        assertThat(capturedCartItem.getQuantity()).isEqualTo(cartAddItemVo.getQuantity() + cartItemReturned.getQuantity());
+
+        assertThat(cartArgumentCaptor.getValue()).isNotNull();
+        final Cart capturedCart = cartArgumentCaptor.getValue();
+
+        assertThat(capturedCart.getTotalAmountAfterDiscount()).isEqualTo(cartItem.getTotalAmountAfterCampaign());
+        assertThat(capturedCart.getTotalAmount()).isEqualTo(cartItem.getTotalAmount());
+        assertThat(capturedCart.getAppliedCoupon()).isEqualTo(cart.getAppliedCoupon());
+        assertThat(capturedCart.getItems()).isNotEmpty();
+        assertThat(capturedCart.getItems().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void should_add_item_when_cart_found_with_existing_list_with_different_product() {
+        // given
+        final Long cartId = 1L;
+        final CartAddItemVo cartAddItemVo = CartAddItemVo.builder()
+                .productId(1L)
+                .quantity(2L)
+                .build();
+
+        final CartItem cartItem = CartItem.builder()
+                .productId(2L)
+                .quantity(2L)
+                .categoryId(3L)
+                .appliedCampaign(4L)
+                .totalAmount(100.0)
+                .totalAmountAfterCampaign(75.0)
+                .build();
+
+        final Cart cart = Cart.builder()
+                .id(cartId)
+                .appliedCoupon(2L)
+                .totalAmountAfterDiscount(75.0)
+                .totalAmount(100.0)
+                .items(Stream.of(cartItem).collect(Collectors.toList()))
+                .build();
+
+        final CartItem cartItemReturned = CartItem.builder()
+                .productId(1L)
+                .quantity(2L)
+                .categoryId(3L)
+                .appliedCampaign(4L)
+                .totalAmount(100.0)
+                .totalAmountAfterCampaign(75.0)
+                .build();
+
+        // when
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(discountCalculatorService.createCartItemWithCampaign(any(CartItem.class))).thenReturn(cartItemReturned);
+
+        cartService.addItem(cartId, cartAddItemVo);
+        // then
+        cartArgumentCaptor = ArgumentCaptor.forClass(Cart.class);
+        cartItemArgumentCaptor = ArgumentCaptor.forClass(CartItem.class);
+
+        final InOrder inOrder = Mockito.inOrder(cartRepository, discountCalculatorService);
+        inOrder.verify(cartRepository).findById(cartId);
+        inOrder.verify(discountCalculatorService).createCartItemWithCampaign(cartItemArgumentCaptor.capture());
+        inOrder.verify(cartRepository).save(cartArgumentCaptor.capture());
+        inOrder.verifyNoMoreInteractions();
+
+        assertThat(cartItemArgumentCaptor.getValue()).isNotNull();
+        final CartItem capturedCartItem = cartItemArgumentCaptor.getValue();
+
+        assertThat(capturedCartItem.getProductId()).isEqualTo(cartAddItemVo.getProductId());
+        assertThat(capturedCartItem.getQuantity()).isEqualTo(cartAddItemVo.getQuantity());
+
+        assertThat(cartArgumentCaptor.getValue()).isNotNull();
+        final Cart capturedCart = cartArgumentCaptor.getValue();
+
+        assertThat(capturedCart.getTotalAmountAfterDiscount()).isEqualTo(cartItem.getTotalAmountAfterCampaign() + cartItemReturned.getTotalAmountAfterCampaign());
+        assertThat(capturedCart.getTotalAmount()).isEqualTo(cartItem.getTotalAmount() + cartItemReturned.getTotalAmount());
+        assertThat(capturedCart.getAppliedCoupon()).isEqualTo(cart.getAppliedCoupon());
+        assertThat(capturedCart.getItems()).isNotEmpty();
+        assertThat(capturedCart.getItems().size()).isEqualTo(2);
     }
 }

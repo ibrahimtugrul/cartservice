@@ -1,21 +1,25 @@
 package com.ibrahimtugrul.cartservice.infrastructure.rest;
 
 import com.ibrahimtugrul.cartservice.application.manager.CartManager;
+import com.ibrahimtugrul.cartservice.application.model.request.CartAddItemRequest;
 import com.ibrahimtugrul.cartservice.application.model.response.CartItemResponse;
 import com.ibrahimtugrul.cartservice.application.model.response.CartResponse;
 import com.ibrahimtugrul.cartservice.application.model.response.IdResponse;
+import com.ibrahimtugrul.cartservice.infrastructure.rest.util.WebTestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -32,6 +36,8 @@ public class RestCartControllerTest {
     private MockMvc mockMvc;
 
     private static final String CART_URL = "/api/v1/cart";
+    private static final String ERR_MISSING_PRODUCT_ID = "cart.validation.required.productId";
+    private static final String ERR_MISSING_QUANTITY = "cart.validation.required.quantity";
 
     @BeforeEach
     public void setup() {
@@ -154,5 +160,152 @@ public class RestCartControllerTest {
         // then
         resultActions.andExpect(status().isOk());
         verify(cartManager, times(1)).delete(cartId);
+    }
+
+    @Test
+    public void should_return_updated_cart_when_add_item_to_the_cart() throws Exception {
+        // given
+        final Long cartId = 1L;
+
+        final CartAddItemRequest cartAddItemRequest = CartAddItemRequest.builder()
+                .productId("1")
+                .quantity("2")
+                .build();
+
+
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                put(StringUtils.join(CART_URL, "/{cartId}/item"), cartId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(WebTestUtil.convertObjectToJsonBytes(cartAddItemRequest)));
+
+        // then
+        resultActions.andExpect(status().isOk());
+        verify(cartManager, times(1)).addItem(cartId, cartAddItemRequest);
+    }
+
+    @Test
+    public void should_return_bad_request_when_product_id_is_null() throws Exception {
+        // given
+        final String cartId = "1";
+
+        final CartAddItemRequest cartAddItemRequest = CartAddItemRequest.builder()
+                .quantity("2")
+                .build();
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                put(StringUtils.join(CART_URL, "/{cartId}/item"), cartId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(WebTestUtil.convertObjectToJsonBytes(cartAddItemRequest)));
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+        assertThat(resultActions.andReturn().getResolvedException().getLocalizedMessage().contains(ERR_MISSING_PRODUCT_ID)).isTrue();
+    }
+
+    @Test
+    public void should_return_bad_request_when_product_id_is_empty() throws Exception {
+        // given
+        final String cartId = "1";
+
+        final CartAddItemRequest cartAddItemRequest = CartAddItemRequest.builder()
+                .productId(StringUtils.EMPTY)
+                .quantity("2")
+                .build();
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                put(StringUtils.join(CART_URL, "/{cartId}/item"), cartId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(WebTestUtil.convertObjectToJsonBytes(cartAddItemRequest)));
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+        assertThat(resultActions.andReturn().getResolvedException().getLocalizedMessage().contains(ERR_MISSING_PRODUCT_ID)).isTrue();
+    }
+
+    @Test
+    public void should_return_bad_request_when_product_id_is_blank() throws Exception {
+        // given
+        final String cartId = "1";
+
+        final CartAddItemRequest cartAddItemRequest = CartAddItemRequest.builder()
+                .productId(StringUtils.SPACE)
+                .quantity("2")
+                .build();
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                put(StringUtils.join(CART_URL, "/{cartId}/item"), cartId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(WebTestUtil.convertObjectToJsonBytes(cartAddItemRequest)));
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+        assertThat(resultActions.andReturn().getResolvedException().getLocalizedMessage().contains(ERR_MISSING_PRODUCT_ID)).isTrue();
+    }
+
+    @Test
+    public void should_return_bad_request_when_quantity_is_null() throws Exception {
+        // given
+        final String cartId = "1";
+
+        final CartAddItemRequest cartAddItemRequest = CartAddItemRequest.builder()
+                .productId("1")
+                .build();
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                put(StringUtils.join(CART_URL, "/{cartId}/item"), cartId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(WebTestUtil.convertObjectToJsonBytes(cartAddItemRequest)));
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+        assertThat(resultActions.andReturn().getResolvedException().getLocalizedMessage().contains(ERR_MISSING_QUANTITY)).isTrue();
+    }
+
+    @Test
+    public void should_return_bad_request_when_quantity_is_empty() throws Exception {
+        // given
+        final String cartId = "1";
+
+        final CartAddItemRequest cartAddItemRequest = CartAddItemRequest.builder()
+                .productId("1")
+                .quantity(StringUtils.EMPTY)
+                .build();
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                put(StringUtils.join(CART_URL, "/{cartId}/item"), cartId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(WebTestUtil.convertObjectToJsonBytes(cartAddItemRequest)));
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+        assertThat(resultActions.andReturn().getResolvedException().getLocalizedMessage().contains(ERR_MISSING_QUANTITY)).isTrue();
+    }
+
+    @Test
+    public void should_return_bad_request_when_quantity_is_blank() throws Exception {
+        // given
+        final String cartId = "1";
+
+        final CartAddItemRequest cartAddItemRequest = CartAddItemRequest.builder()
+                .productId("1")
+                .quantity(StringUtils.SPACE)
+                .build();
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                put(StringUtils.join(CART_URL, "/{cartId}/item"), cartId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(WebTestUtil.convertObjectToJsonBytes(cartAddItemRequest)));
+
+        // then
+        resultActions.andExpect(status().isBadRequest());
+        assertThat(resultActions.andReturn().getResolvedException().getLocalizedMessage().contains(ERR_MISSING_QUANTITY)).isTrue();
     }
 }

@@ -1,6 +1,7 @@
 package com.ibrahimtugrul.cartservice.infrastructure.interceptor;
 
 import com.google.common.collect.ImmutableMap;
+import com.ibrahimtugrul.cartservice.application.exception.RequestValidationException;
 import com.ibrahimtugrul.cartservice.domain.exception.BusinessException;
 import com.ibrahimtugrul.cartservice.infrastructure.locale.MessageSourceLocalizer;
 import com.ibrahimtugrul.cartservice.infrastructure.model.ExceptionType;
@@ -41,14 +42,14 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         final RestErrorMessageResponse error = createErrorResponse(REQUEST_VALIDATION_EXCEPTION_USER_MESSAGE, ExceptionType.BUSINESS, exception.getMessage(), exception.getArguments());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
-/*
+
     @ExceptionHandler(RequestValidationException.class)
     public ResponseEntity<Object> handleRequestValidationException(RequestValidationException exception) {
         logger.warn("A request validation exception has occurred: ", exception);
         final RestErrorMessageResponse error = createErrorResponse(REQUEST_VALIDATION_EXCEPTION_USER_MESSAGE, ExceptionType.PARAMETER_VALIDATION, exception.getMessage(), exception.getArguments());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
-
+/*
     @ExceptionHandler(InvalidRequestException.class)
     public ResponseEntity<Object> handleInvalidRequestException(final InvalidRequestException exception) {
         logger.warn("An invalid request exception has occurred: ", exception);

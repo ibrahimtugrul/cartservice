@@ -46,4 +46,10 @@ public class CampaignService {
         final Campaign campaign = campaignRepository.findById(campaignId).orElseThrow(() -> new EntityNotFoundException("campaign"));
         campaignRepository.delete(campaign);
     }
+
+
+    public List<CampaignVo> retrieveCampaignsByCategoryId(final Long categoryId) {
+        final List<Campaign> campaignList = campaignRepository.findByCategoryId(categoryId).orElseThrow(() -> new EntityNotFoundException("campaign"));
+        return campaignList.stream().map(campaign -> campaignToVoConverter.convert(campaign)).collect(Collectors.toList());
+    }
 }

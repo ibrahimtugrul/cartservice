@@ -2,6 +2,7 @@ package com.ibrahimtugrul.cartservice.infrastructure.rest;
 
 import com.ibrahimtugrul.cartservice.application.controller.CartController;
 import com.ibrahimtugrul.cartservice.application.manager.CartManager;
+import com.ibrahimtugrul.cartservice.application.model.request.CartAddItemRequest;
 import com.ibrahimtugrul.cartservice.application.model.response.CartResponse;
 import com.ibrahimtugrul.cartservice.application.model.response.IdResponse;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -42,5 +44,11 @@ public class RestCartController implements CartController {
     @DeleteMapping("/{cartId}")
     public void delete(@PathVariable("cartId") final Long cartId) {
         cartManager.delete(cartId);
+    }
+
+    @Override
+    @PutMapping(value = "/{cartId}/item")
+    public void addItem(@PathVariable("cartId") final Long cartId, @Valid @RequestBody final CartAddItemRequest cartAddItemRequest) {
+        cartManager.addItem(cartId, cartAddItemRequest);
     }
 }

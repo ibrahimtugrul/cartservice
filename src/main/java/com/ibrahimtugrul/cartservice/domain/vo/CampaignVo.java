@@ -12,4 +12,15 @@ public class CampaignVo {
     private long categoryId;
     private double discount;
     private DiscountType discountType;
+
+    public double calculateCampaignDiscount(final Long quantity, final double productPrice) {
+        switch (this.getDiscountType()) {
+            case RATE:
+                return ((quantity * productPrice) * discount) / 100;
+            case AMOUNT:
+                return (quantity * productPrice) - discount >= 0 ? discount : 0;
+            default:
+                return 0.0;
+        }
+    }
 }

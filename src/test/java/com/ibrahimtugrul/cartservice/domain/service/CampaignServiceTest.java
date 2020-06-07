@@ -3,6 +3,7 @@ package com.ibrahimtugrul.cartservice.domain.service;
 import com.ibrahimtugrul.cartservice.domain.converter.CampaignToVoConverter;
 import com.ibrahimtugrul.cartservice.domain.entity.Campaign;
 import com.ibrahimtugrul.cartservice.domain.enums.DiscountType;
+import com.ibrahimtugrul.cartservice.domain.exception.BusinessException;
 import com.ibrahimtugrul.cartservice.domain.exception.EntityNotFoundException;
 import com.ibrahimtugrul.cartservice.domain.repository.CampaignRepository;
 import com.ibrahimtugrul.cartservice.domain.vo.CampaignCreateVo;
@@ -229,6 +230,62 @@ public class CampaignServiceTest {
         when(campaignRepository.findById(id)).thenReturn(Optional.ofNullable(null));
 
         final Throwable throwable = catchThrowable(()->{campaignService.delete(id);});
+
+        // then
+        assertThat(throwable).isNotNull();
+        assertThat(throwable).isInstanceOf(EntityNotFoundException.class);
+
+        final EntityNotFoundException entityNotFoundException = (EntityNotFoundException) throwable;
+        assertThat(entityNotFoundException.getLocalizedMessage().contains(ERR_ENTITY_NOT_FOUND)).isTrue();
+    }
+
+    @Test
+    public void should_return_campaign_list_when_campaign_found_with_category_id() {
+        // given
+        final Campaign campaign = Campaign.builder()
+                .minimumBuyingRule(3)
+                .discountType(DiscountType.RATE)
+                .discount(15.0)
+                .categoryId(1L)
+                .id(1L)
+                .build();
+
+        final CampaignVo campaignVo = CampaignVo.builder()
+                .minimumBuyingRule(3)
+                .discountType(DiscountType.RATE)
+                .discount(15.0)
+                .categoryId(1)
+                .id(1L)
+                .build();
+
+        // when
+        when(campaignRepository.findByCategoryId(1L)).thenReturn(Optional.of(List.of(campaign)));
+        when(campaignToVoConverter.convert(campaign)).thenReturn(campaignVo);
+
+        final List<CampaignVo> campaignVoList = campaignService.retrieveCampaignsByCategoryId(1L);
+
+        // then
+        assertThat(campaignVoList).isNotEmpty();
+        assertThat(campaignVoList.size()).isEqualTo(1);
+
+        final CampaignVo campaignVo1 = campaignVoList.get(0);
+
+        assertThat(campaignVo1.getDiscountType()).isEqualTo(campaign.getDiscountType());
+        assertThat(campaignVo1.getDiscount()).isEqualTo(campaign.getDiscount());
+        assertThat(campaignVo1.getMinimumBuyingRule()).isEqualTo(campaign.getMinimumBuyingRule());
+        assertThat(campaignVo1.getCategoryId()).isEqualTo(campaign.getCategoryId());
+        assertThat(campaignVo1.getId()).isEqualTo(campaign.getId());
+    }
+
+    @Test
+    public void should_throw_exception_when_no_campaign_found_with_given_cateegory_id() {
+        // given
+        final Long categoryId = 1L;
+
+        // when
+        when(campaignRepository.findByCategoryId(categoryId)).thenReturn(Optional.ofNullable(null));
+
+        final Throwable throwable = catchThrowable(() -> {campaignService.retrieveCampaignsByCategoryId(categoryId);});
 
         // then
         assertThat(throwable).isNotNull();

@@ -1,10 +1,14 @@
 package com.ibrahimtugrul.cartservice.application.manager;
 
+import com.ibrahimtugrul.cartservice.application.converter.CartAddItemToVoConverter;
 import com.ibrahimtugrul.cartservice.application.mapper.CartVoToCartResponseMapper;
+import com.ibrahimtugrul.cartservice.application.model.request.CartAddItemRequest;
 import com.ibrahimtugrul.cartservice.application.model.response.CartItemResponse;
 import com.ibrahimtugrul.cartservice.application.model.response.CartResponse;
 import com.ibrahimtugrul.cartservice.application.model.response.IdResponse;
+import com.ibrahimtugrul.cartservice.application.validator.CartAddItemValidator;
 import com.ibrahimtugrul.cartservice.domain.service.CartService;
+import com.ibrahimtugrul.cartservice.domain.vo.CartAddItemVo;
 import com.ibrahimtugrul.cartservice.domain.vo.CartItemVo;
 import com.ibrahimtugrul.cartservice.domain.vo.CartVo;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,9 +35,15 @@ public class CartManagerTest {
     @Mock
     private CartVoToCartResponseMapper cartVoToCartResponseMapper;
 
+    @Mock
+    private CartAddItemValidator cartAddItemValidator;
+
+    @Mock
+    private CartAddItemToVoConverter cartAddItemToVoConverter;
+
     @BeforeEach
     public void setup() {
-        this.cartManager = new CartManager(cartService, cartVoToCartResponseMapper);
+        this.cartManager = new CartManager(cartService, cartVoToCartResponseMapper, cartAddItemValidator, cartAddItemToVoConverter);
     }
 
     @Test
@@ -198,6 +208,34 @@ public class CartManagerTest {
         // then
         final InOrder inOrder = Mockito.inOrder(cartService);
         inOrder.verify(cartService).delete(id);
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void should_add_item_when_add_item_request_is_valid() {
+        // given
+        final Long cartId = 1L;
+
+        final CartAddItemRequest cartAddItemRequest = CartAddItemRequest.builder()
+                .productId("1")
+                .quantity("1")
+                .build();
+
+        final CartAddItemVo cartAddItemVo = CartAddItemVo.builder()
+                .productId(1L)
+                .quantity(1L)
+                .build();
+
+        // when
+        when(cartAddItemToVoConverter.convert(cartAddItemRequest)).thenReturn(cartAddItemVo);
+
+        cartManager.addItem(cartId, cartAddItemRequest);
+
+        // then
+        final InOrder inOrder = Mockito.inOrder(cartAddItemValidator, cartAddItemToVoConverter, cartService);
+        inOrder.verify(cartAddItemValidator).validate(cartAddItemRequest);
+        inOrder.verify(cartAddItemToVoConverter).convert(cartAddItemRequest);
+        inOrder.verify(cartService).addItem(cartId, cartAddItemVo);
         inOrder.verifyNoMoreInteractions();
     }
 }

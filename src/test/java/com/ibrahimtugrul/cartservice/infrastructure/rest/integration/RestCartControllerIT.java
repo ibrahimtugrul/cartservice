@@ -1,8 +1,17 @@
 package com.ibrahimtugrul.cartservice.infrastructure.rest.integration;
 
+import com.ibrahimtugrul.cartservice.application.model.request.CartAddItemRequest;
+import com.ibrahimtugrul.cartservice.domain.entity.Campaign;
 import com.ibrahimtugrul.cartservice.domain.entity.Cart;
 import com.ibrahimtugrul.cartservice.domain.entity.CartItem;
+import com.ibrahimtugrul.cartservice.domain.entity.Product;
+import com.ibrahimtugrul.cartservice.domain.enums.DiscountType;
+import com.ibrahimtugrul.cartservice.domain.repository.CampaignRepository;
 import com.ibrahimtugrul.cartservice.domain.repository.CartRepository;
+import com.ibrahimtugrul.cartservice.domain.repository.ProductRepository;
+import com.ibrahimtugrul.cartservice.domain.vo.CampaignVo;
+import com.ibrahimtugrul.cartservice.domain.vo.ProductVo;
+import com.ibrahimtugrul.cartservice.infrastructure.rest.util.WebTestUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,11 +33,19 @@ public class RestCartControllerIT extends BaseWebIT {
     @Autowired
     private CartRepository cartRepository;
 
+    @Autowired
+    private CampaignRepository campaignRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
     private static final String CART_URL = "/api/v1/cart";
 
     @BeforeEach
     public void setup() {// to delete initial values for integration test health
         cartRepository.deleteAll();
+        productRepository.deleteAll();
+        campaignRepository.deleteAll();
     }
 
     @Test
@@ -167,8 +184,78 @@ public class RestCartControllerIT extends BaseWebIT {
         resultActions.andExpect(status().isOk());
     }
 
+    @Test
+    public void should_add_item_when_no_cart_item_found() throws Exception {
+        // given
+        final Product product = Product.builder()
+                .categoryId(1L)
+                .price(100.0)
+                .title("product")
+                .build();
+
+        productRepository.save(product);
+
+        final Campaign campaignWithAmount = Campaign.builder()
+                .categoryId(1L)
+                .discount(25.0)
+                .discountType(DiscountType.AMOUNT)
+                .minimumBuyingRule(2)
+                .build();
+
+        campaignRepository.save(campaignWithAmount);
+
+        final Campaign campaignVoWithRate = Campaign.builder()
+                .categoryId(1L)
+                .discount(35.0)
+                .discountType(DiscountType.RATE)
+                .minimumBuyingRule(2)
+                .build();
+
+        campaignRepository.save(campaignVoWithRate);
+
+        final Cart cart = Cart.builder()
+                .appliedCoupon(2L)
+                .totalAmount(100.0)
+                .totalAmountAfterDiscount(75.0)
+                .build();
+
+        cartRepository.save(cart);
+
+        final CartAddItemRequest cartAddItemRequest = CartAddItemRequest.builder()
+                .quantity("2")
+                .productId(String.valueOf(product.getId()))
+                .build();
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(put(CART_URL + "/{cartId}/item", cart.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(WebTestUtil.convertObjectToJsonBytes(cartAddItemRequest)));
+
+        resultActions.andExpect(status().isOk());
+
+        final List<Cart> savedCartList = cartRepository.findAll();
+        assertThat(savedCartList).isNotEmpty();
+        assertThat(savedCartList.size()).isEqualTo(1);
+
+        final Cart savedCart = savedCartList.get(0);
+        assertThat(savedCart.getItems()).isNotEmpty();
+        assertThat(savedCart.getItems().size()).isEqualTo(1);
+
+        final CartItem savedCartItem = savedCart.getItems().get(0);
+
+        assertThat(savedCartItem).isNotNull();
+        assertThat(savedCartItem.getProductId()).isEqualTo(product.getId());
+        assertThat(savedCartItem.getQuantity()).isEqualTo(Long.valueOf(cartAddItemRequest.getQuantity()));
+        assertThat(savedCartItem.getCategoryId()).isEqualTo(campaignVoWithRate.getCategoryId());
+        assertThat(savedCartItem.getAppliedCampaign()).isEqualTo(campaignVoWithRate.getId());
+        assertThat(savedCartItem.getTotalAmount()).isEqualTo(Long.valueOf(cartAddItemRequest.getQuantity()) * product.getPrice());
+        assertThat(savedCartItem.getTotalAmountAfterCampaign()).isEqualTo(130.0);
+    }
+
     @AfterEach
     public void tearDown() {
         cartRepository.deleteAll();
+        productRepository.deleteAll();
+        campaignRepository.deleteAll();
     }
 }
