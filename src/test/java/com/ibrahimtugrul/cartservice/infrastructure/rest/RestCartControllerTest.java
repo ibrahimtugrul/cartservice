@@ -13,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -307,5 +308,20 @@ public class RestCartControllerTest {
         // then
         resultActions.andExpect(status().isBadRequest());
         assertThat(resultActions.andReturn().getResolvedException().getLocalizedMessage().contains(ERR_MISSING_QUANTITY)).isTrue();
+    }
+
+    @Test
+    public void should_apply_coupon_with_given_cart_and_coupon_id() throws Exception {
+        // given
+        final Long cartId = 1L;
+        final Long couponId = 2L;
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(
+                put(CART_URL + "/{cartId}/coupon/{couponId}", cartId, couponId));
+
+        // then
+        resultActions.andExpect(status().isOk());
+        verify(cartManager, times(1)).applyCoupon(cartId, couponId);
     }
 }

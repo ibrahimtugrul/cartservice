@@ -51,4 +51,10 @@ public class RestCartController implements CartController {
     public void addItem(@PathVariable("cartId") final Long cartId, @Valid @RequestBody final CartAddItemRequest cartAddItemRequest) {
         cartManager.addItem(cartId, cartAddItemRequest);
     }
+
+    @Override
+    @PutMapping(value = "/{cartId}/coupon/{couponId}")
+    public void applyCoupon(@PathVariable("cartId") final Long cartId, @PathVariable("couponId") final Long couponId) {
+        cartManager.applyCoupon(cartId, couponId);
+    }
 }

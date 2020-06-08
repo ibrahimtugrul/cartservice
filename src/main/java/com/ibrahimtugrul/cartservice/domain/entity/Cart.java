@@ -27,8 +27,8 @@ public class Cart {
     private double totalAmount = 0.0;
     @Builder.Default
     private double totalAmountAfterDiscount = 0.0;
-    /*@Builder.Default
+    @Builder.Default
     private double couponAmount = 0.0;
     @Builder.Default
-    private double totalAmountAfterCoupon = 0.0;*/
+    private double totalAmountAfterCoupon = 0.0;
 }

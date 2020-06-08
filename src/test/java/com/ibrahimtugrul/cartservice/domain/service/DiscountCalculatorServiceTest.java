@@ -4,6 +4,7 @@ import com.ibrahimtugrul.cartservice.domain.entity.CartItem;
 import com.ibrahimtugrul.cartservice.domain.enums.DiscountType;
 import com.ibrahimtugrul.cartservice.domain.vo.CampaignVo;
 import com.ibrahimtugrul.cartservice.domain.vo.CartAddItemVo;
+import com.ibrahimtugrul.cartservice.domain.vo.CouponVo;
 import com.ibrahimtugrul.cartservice.domain.vo.ProductVo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.TestExecutionListeners;
 
 import java.util.List;
 
@@ -29,9 +31,12 @@ public class DiscountCalculatorServiceTest {
     @Mock
     private CampaignService campaignService;
 
+    @Mock
+    private CouponService couponService;
+
     @BeforeEach
     public void setup() {
-        this.discountCalculatorService = new DiscountCalculatorService(productService, campaignService);
+        this.discountCalculatorService = new DiscountCalculatorService(productService, campaignService, couponService);
     }
 
     @Test
@@ -228,4 +233,81 @@ public class DiscountCalculatorServiceTest {
                 .isEqualTo(cartItem.getQuantity() * productVo.getPrice());
     }
 
+    @Test
+    public void should_return_calculated_coupon_discount_when_total_amount_above_minimum_amount_with_discount_type_amount() {
+        // given
+        final double amount = 50.0;
+        final Long couponId = 1L;
+
+        final CouponVo couponVo = CouponVo.builder()
+                .id(1L)
+                .minimumAmount(40)
+                .discountType(DiscountType.AMOUNT)
+                .discount(15)
+                .build();
+
+        // when
+        when(couponService.retrieve(couponId)).thenReturn(couponVo);
+
+        final double discountAmount = discountCalculatorService.calculateDiscountAmount(amount, couponId);
+
+        // then
+        final InOrder inOrder = Mockito.inOrder(couponService);
+        inOrder.verify(couponService).retrieve(couponId);
+        inOrder.verifyNoMoreInteractions();
+
+        assertThat(discountAmount).isEqualTo(couponVo.calculateDiscountAmount(amount));
+    }
+
+    @Test
+    public void should_return_calculated_coupon_discount_when_total_amount_above_minimum_amount_with_discount_type_rate() {
+        // given
+        final double amount = 50.0;
+        final Long couponId = 1L;
+
+        final CouponVo couponVo = CouponVo.builder()
+                .id(1L)
+                .minimumAmount(40)
+                .discountType(DiscountType.RATE)
+                .discount(15)
+                .build();
+
+        // when
+        when(couponService.retrieve(couponId)).thenReturn(couponVo);
+
+        final double discountAmount = discountCalculatorService.calculateDiscountAmount(amount, couponId);
+
+        // then
+        final InOrder inOrder = Mockito.inOrder(couponService);
+        inOrder.verify(couponService).retrieve(couponId);
+        inOrder.verifyNoMoreInteractions();
+
+        assertThat(discountAmount).isEqualTo(couponVo.calculateDiscountAmount(amount));
+    }
+
+    @Test
+    public void should_return_calculated_coupon_discount_when_total_amount_below_minimum_amount() {
+        // given
+        final double amount = 50.0;
+        final Long couponId = 1L;
+
+        final CouponVo couponVo = CouponVo.builder()
+                .id(1L)
+                .minimumAmount(60)
+                .discountType(DiscountType.RATE)
+                .discount(15)
+                .build();
+
+        // when
+        when(couponService.retrieve(couponId)).thenReturn(couponVo);
+
+        final double discountAmount = discountCalculatorService.calculateDiscountAmount(amount, couponId);
+
+        // then
+        final InOrder inOrder = Mockito.inOrder(couponService);
+        inOrder.verify(couponService).retrieve(couponId);
+        inOrder.verifyNoMoreInteractions();
+
+        assertThat(discountAmount).isEqualTo(0.0);
+    }
 }

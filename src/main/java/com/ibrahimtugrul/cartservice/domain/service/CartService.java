@@ -85,4 +85,19 @@ public class CartService {
     private CartItem calculateCartItemInfoWithCampaign(final CartItem cartItem) {
         return discountCalculatorService.createCartItemWithCampaign(cartItem);
     }
+
+    public void applyCoupon(final Long cartId, final Long couponId) {
+        final Cart cart = retrieveCartUnsafe(cartId).orElseThrow(() -> new EntityNotFoundException("cart"));
+        final double couponDiscount = discountCalculatorService.calculateDiscountAmount(cart.getTotalAmountAfterDiscount(), couponId);
+        if(couponDiscount > 0) {
+            cart.setAppliedCoupon(couponId);
+            cart.setCouponAmount(couponDiscount);
+            cart.setTotalAmountAfterCoupon(cart.getTotalAmountAfterDiscount() - couponDiscount);
+        } else {
+            cart.setAppliedCoupon(0L);
+            cart.setCouponAmount(0L);
+            cart.setTotalAmountAfterCoupon(0L);
+        }
+        cartRepository.save(cart);
+    }
 }

@@ -13,4 +13,5 @@ public interface CartController {
     ResponseEntity<CartResponse> retrieveCart(final Long cartId);
     void delete(final Long cartId);
     void addItem(final Long cartId, final CartAddItemRequest cartAddItemRequest);
+    void applyCoupon(final Long cartId, final Long couponId);
 }

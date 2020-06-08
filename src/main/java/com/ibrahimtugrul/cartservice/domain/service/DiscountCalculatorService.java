@@ -1,7 +1,9 @@
 package com.ibrahimtugrul.cartservice.domain.service;
 
 import com.ibrahimtugrul.cartservice.domain.entity.CartItem;
+import com.ibrahimtugrul.cartservice.domain.entity.Coupon;
 import com.ibrahimtugrul.cartservice.domain.vo.CampaignVo;
+import com.ibrahimtugrul.cartservice.domain.vo.CouponVo;
 import com.ibrahimtugrul.cartservice.domain.vo.ProductVo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ public class DiscountCalculatorService {
 
     private final ProductService productService;
     private final CampaignService campaignService;
+    private final CouponService couponService;
 
     public CartItem createCartItemWithCampaign(final CartItem cartItem) {
 
@@ -52,5 +55,10 @@ public class DiscountCalculatorService {
             campaignId =  Double.compare(maximumDiscount, discount) > 0 ? campaignId : item.getId();
         }
         return campaignId;
+    }
+
+    public double calculateDiscountAmount(final double amount, final Long couponId) {
+        final CouponVo couponVo = couponService.retrieve(couponId);
+        return amount >= couponVo.getMinimumAmount() ? couponVo.calculateDiscountAmount(amount) : 0.0;
     }
 }

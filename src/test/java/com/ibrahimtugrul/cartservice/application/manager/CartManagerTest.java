@@ -238,4 +238,19 @@ public class CartManagerTest {
         inOrder.verify(cartService).addItem(cartId, cartAddItemVo);
         inOrder.verifyNoMoreInteractions();
     }
+
+    @Test
+    public void should_apply_coupon_with_cart_id_and_coupon_id() {
+        // given
+        final Long cartId = 1L;
+        final Long couponId = 2L;
+
+        // when
+        cartManager.applyCoupon(cartId, couponId);
+
+        // then
+        final InOrder inOrder = Mockito.inOrder(cartService);
+        inOrder.verify(cartService).applyCoupon(cartId, couponId);
+        inOrder.verifyNoMoreInteractions();
+    }
 }

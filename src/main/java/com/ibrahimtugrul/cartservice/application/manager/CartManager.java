@@ -48,4 +48,8 @@ public class CartManager {
         final CartAddItemVo cartAddItemVo = cartAddItemToVoConverter.convert(cartAddItemRequest);
         cartService.addItem(cartId,cartAddItemVo);
     }
+
+    public void applyCoupon(final Long cartId, final Long couponId) {
+        cartService.applyCoupon(cartId, couponId);
+    }
 }

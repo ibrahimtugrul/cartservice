@@ -1,13 +1,11 @@
 package com.ibrahimtugrul.cartservice.infrastructure.rest.integration;
 
 import com.ibrahimtugrul.cartservice.application.model.request.CartAddItemRequest;
-import com.ibrahimtugrul.cartservice.domain.entity.Campaign;
-import com.ibrahimtugrul.cartservice.domain.entity.Cart;
-import com.ibrahimtugrul.cartservice.domain.entity.CartItem;
-import com.ibrahimtugrul.cartservice.domain.entity.Product;
+import com.ibrahimtugrul.cartservice.domain.entity.*;
 import com.ibrahimtugrul.cartservice.domain.enums.DiscountType;
 import com.ibrahimtugrul.cartservice.domain.repository.CampaignRepository;
 import com.ibrahimtugrul.cartservice.domain.repository.CartRepository;
+import com.ibrahimtugrul.cartservice.domain.repository.CouponRepository;
 import com.ibrahimtugrul.cartservice.domain.repository.ProductRepository;
 import com.ibrahimtugrul.cartservice.domain.vo.CampaignVo;
 import com.ibrahimtugrul.cartservice.domain.vo.ProductVo;
@@ -38,6 +36,9 @@ public class RestCartControllerIT extends BaseWebIT {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private CouponRepository couponRepository;
 
     private static final String CART_URL = "/api/v1/cart";
 
@@ -252,10 +253,58 @@ public class RestCartControllerIT extends BaseWebIT {
         assertThat(savedCartItem.getTotalAmountAfterCampaign()).isEqualTo(130.0);
     }
 
+    @Test
+    public void should_apply_coupon_when_cart_and_coupon_found() throws Exception {
+        // given
+        final CartItem cartItem = CartItem.builder()
+                .appliedCampaign(2L)
+                .categoryId(3L)
+                .productId(1L)
+                .quantity(4L)
+                .totalAmount(100.0)
+                .totalAmountAfterCampaign(75.0)
+                .build();
+
+        final Cart cart = Cart.builder()
+                .appliedCoupon(2L)
+                .items(List.of(cartItem))
+                .totalAmount(100.0)
+                .totalAmountAfterDiscount(75.0)
+                .build();
+
+        cartRepository.save(cart);
+
+        final Coupon coupon = Coupon.builder()
+                .discount(15)
+                .discountType(DiscountType.AMOUNT)
+                .minimumAmount(50)
+                .build();
+
+        couponRepository.save(coupon);
+
+        // when
+        final ResultActions resultActions = mockMvc.perform(put(CART_URL + "/{cartId}/coupon/{couponId}", cart.getId(), coupon.getId())
+                .contentType(MediaType.APPLICATION_JSON));
+
+        // then
+        final List<Cart> savedCartList = cartRepository.findAll();
+        assertThat(savedCartList).isNotEmpty();
+        assertThat(savedCartList.size()).isEqualTo(1);
+
+        final Cart savedCart = savedCartList.get(0);
+        assertThat(savedCart.getItems()).isNotEmpty();
+        assertThat(savedCart.getItems().size()).isEqualTo(1);
+
+        assertThat(savedCart.getAppliedCoupon()).isEqualTo(coupon.getId());
+        assertThat(savedCart.getCouponAmount()).isEqualTo(coupon.getDiscount());
+        assertThat(savedCart.getTotalAmountAfterCoupon()).isEqualTo(60.0);
+    }
+
     @AfterEach
     public void tearDown() {
         cartRepository.deleteAll();
         productRepository.deleteAll();
         campaignRepository.deleteAll();
+        couponRepository.deleteAll();
     }
 }

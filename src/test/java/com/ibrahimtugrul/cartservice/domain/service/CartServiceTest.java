@@ -8,6 +8,7 @@ import com.ibrahimtugrul.cartservice.domain.repository.CartRepository;
 import com.ibrahimtugrul.cartservice.domain.vo.CartAddItemVo;
 import com.ibrahimtugrul.cartservice.domain.vo.CartItemVo;
 import com.ibrahimtugrul.cartservice.domain.vo.CartVo;
+import net.bytebuddy.implementation.bytecode.Throw;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -85,7 +86,7 @@ public class CartServiceTest {
     }
 
     @Test
-    public void should_list_all_categories() {
+    public void should_list_all_carts() {
         // given
         final CartItem cartItem = CartItem.builder()
                 .appliedCampaign(2L)
@@ -491,5 +492,114 @@ public class CartServiceTest {
         assertThat(capturedCart.getAppliedCoupon()).isEqualTo(cart.getAppliedCoupon());
         assertThat(capturedCart.getItems()).isNotEmpty();
         assertThat(capturedCart.getItems().size()).isEqualTo(2);
+    }
+
+    @Test
+    public void should_apply_coupon_when_cart_found_and_discount_amount_above_zero() {
+        // given
+        final Long cartId = 3L;
+        final Long couponId = 1L;
+
+        final CartItem cartItem = CartItem.builder()
+                .appliedCampaign(2L)
+                .categoryId(3L)
+                .productId(1L)
+                .quantity(4L)
+                .totalAmount(100.0)
+                .totalAmountAfterCampaign(75.0)
+                .build();
+
+        final Cart cart = Cart.builder()
+                .appliedCoupon(2L)
+                .id(3L)
+                .items(List.of(cartItem))
+                .totalAmount(100.0)
+                .totalAmountAfterDiscount(75.0)
+                .build();
+
+        // when
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(discountCalculatorService.calculateDiscountAmount(cart.getTotalAmountAfterDiscount(), couponId)).thenReturn(50.0);
+
+        cartService.applyCoupon(cartId, couponId);
+
+        // then
+        cartArgumentCaptor = ArgumentCaptor.forClass(Cart.class);
+
+        final InOrder inOrder = Mockito.inOrder(cartRepository, discountCalculatorService);
+        inOrder.verify(cartRepository).findById(cartId);
+        inOrder.verify(discountCalculatorService).calculateDiscountAmount(cart.getTotalAmountAfterDiscount(), couponId);
+        inOrder.verify(cartRepository).save(cartArgumentCaptor.capture());
+
+        assertThat(cartArgumentCaptor.getValue()).isNotNull();
+        final Cart capturedCart = cartArgumentCaptor.getValue();
+
+        assertThat(capturedCart.getAppliedCoupon()).isEqualTo(couponId);
+        assertThat(capturedCart.getCouponAmount()).isEqualTo(50.0);
+        assertThat(capturedCart.getTotalAmountAfterCoupon()).isEqualTo(capturedCart.getTotalAmountAfterDiscount() - 50.0);
+    }
+
+    @Test
+    public void should_apply_coupon_when_cart_found_and_discount_amount_is_zero() {
+        // given
+        final Long cartId = 3L;
+        final Long couponId = 1L;
+
+        final CartItem cartItem = CartItem.builder()
+                .appliedCampaign(2L)
+                .categoryId(3L)
+                .productId(1L)
+                .quantity(4L)
+                .totalAmount(100.0)
+                .totalAmountAfterCampaign(75.0)
+                .build();
+
+        final Cart cart = Cart.builder()
+                .appliedCoupon(2L)
+                .id(3L)
+                .items(List.of(cartItem))
+                .totalAmount(100.0)
+                .totalAmountAfterDiscount(75.0)
+                .build();
+
+        // when
+        when(cartRepository.findById(cartId)).thenReturn(Optional.of(cart));
+        when(discountCalculatorService.calculateDiscountAmount(cart.getTotalAmountAfterDiscount(), couponId)).thenReturn(0.0);
+
+        cartService.applyCoupon(cartId, couponId);
+
+        // then
+        cartArgumentCaptor = ArgumentCaptor.forClass(Cart.class);
+
+        final InOrder inOrder = Mockito.inOrder(cartRepository, discountCalculatorService);
+        inOrder.verify(cartRepository).findById(cartId);
+        inOrder.verify(discountCalculatorService).calculateDiscountAmount(cart.getTotalAmountAfterDiscount(), couponId);
+        inOrder.verify(cartRepository).save(cartArgumentCaptor.capture());
+
+        assertThat(cartArgumentCaptor.getValue()).isNotNull();
+        final Cart capturedCart = cartArgumentCaptor.getValue();
+
+        assertThat(capturedCart.getAppliedCoupon()).isEqualTo(0);
+        assertThat(capturedCart.getCouponAmount()).isEqualTo(0.0);
+        assertThat(capturedCart.getTotalAmountAfterCoupon()).isEqualTo(0.0);
+    }
+
+    @Test
+    public void should_throw_exception_when_apply_coupon_with_cart_not_found_() {
+        // given
+        final Long cartId = 3L;
+        final Long couponId = 1L;
+
+        // when
+        when(cartRepository.findById(cartId)).thenReturn(Optional.ofNullable(null));
+
+        final Throwable throwable = catchThrowable(() -> {cartService.applyCoupon(cartId, couponId);});
+
+        // then
+        assertThat(throwable).isNotNull();
+        assertThat(throwable).isInstanceOf(EntityNotFoundException.class);
+
+        final EntityNotFoundException entityNotFoundException = (EntityNotFoundException) throwable;
+        assertThat(entityNotFoundException.getLocalizedMessage().contains(ERR_ENTITY_NOT_FOUND)).isTrue();
     }
 }
