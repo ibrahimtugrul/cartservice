@@ -2,6 +2,7 @@ package com.ibrahimtugrul.cartservice.domain.converter;
 
 import com.ibrahimtugrul.cartservice.domain.entity.Cart;
 import com.ibrahimtugrul.cartservice.domain.entity.CartItem;
+import com.ibrahimtugrul.cartservice.domain.service.DeliveryCostCalculator;
 import com.ibrahimtugrul.cartservice.domain.vo.CartItemVo;
 import com.ibrahimtugrul.cartservice.domain.vo.CartVo;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,16 +22,20 @@ public class CartToVoConverterTest {
     @Mock
     private CartItemToVoConverter cartItemToVoConverter;
 
+    @Mock
+    private DeliveryCostCalculator deliveryCostCalculator;
+
     private CartToVoConverter cartToVoConverter;
 
     @BeforeEach
     public void setup() {
-        this.cartToVoConverter = new CartToVoConverter(cartItemToVoConverter);
+        this.cartToVoConverter = new CartToVoConverter(cartItemToVoConverter, deliveryCostCalculator);
     }
 
     @Test
     public void should_convert() {
         // given
+        final double deliverycost = 10.0;
         final CartItem cartItem = CartItem.builder()
                 .appliedCampaign(2L)
                 .categoryId(3L)
@@ -61,6 +66,7 @@ public class CartToVoConverterTest {
 
         // when
         when(cartItemToVoConverter.convert(cartItem)).thenReturn(cartItemVo);
+        when(deliveryCostCalculator.calculateDeliveryCost(cart)).thenReturn(deliverycost);
 
         final CartVo cartVo = cartToVoConverter.convert(cart);
 
@@ -72,6 +78,7 @@ public class CartToVoConverterTest {
         assertThat(cartVo.getTotalAmountAfterDiscount()).isEqualTo(cart.getTotalAmountAfterDiscount());
         assertThat(cartVo.getCouponAmount()).isEqualTo(cart.getCouponAmount());
         assertThat(cartVo.getTotalAmountAfterCoupon()).isEqualTo(cart.getTotalAmountAfterCoupon());
+        assertThat(cartVo.getDeliveryCost()).isEqualTo(deliverycost);
         assertThat(cartVo.getItems()).isNotEmpty();
         assertThat(cartVo.getItems().size()).isEqualTo(1);
         assertThat(cartVo.getItems().get(0).getTotalAmountAfterCampaign()).isEqualTo(cart.getItems().get(0).getTotalAmountAfterCampaign());

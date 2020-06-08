@@ -2,6 +2,7 @@ package com.ibrahimtugrul.cartservice.domain.converter;
 
 import com.ibrahimtugrul.cartservice.domain.entity.Cart;
 import com.ibrahimtugrul.cartservice.domain.entity.CartItem;
+import com.ibrahimtugrul.cartservice.domain.service.DeliveryCostCalculator;
 import com.ibrahimtugrul.cartservice.domain.vo.CartItemVo;
 import com.ibrahimtugrul.cartservice.domain.vo.CartVo;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
 public class CartToVoConverter implements Function<Cart, CartVo>, Converter<Cart, CartVo> {
 
     private final CartItemToVoConverter cartItemToVoConverter;
+    private final DeliveryCostCalculator deliveryCostCalculator;
 
     @Override
     public CartVo apply(final Cart cart) {
@@ -31,6 +33,7 @@ public class CartToVoConverter implements Function<Cart, CartVo>, Converter<Cart
                 .items(cartItemVoList)
                 .couponAmount(cart.getCouponAmount())
                 .totalAmountAfterCoupon(cart.getTotalAmountAfterCoupon())
+                .deliveryCost(deliveryCostCalculator.calculateDeliveryCost(cart))
                 .build();
     }
 

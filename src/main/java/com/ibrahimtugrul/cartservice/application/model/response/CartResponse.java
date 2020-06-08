@@ -19,4 +19,5 @@ public class CartResponse {
     private String totalAmountAfterDiscount;
     private String couponAmount;
     private String totalAmountAfterCoupon;
+    private String deliveryCost;
 }

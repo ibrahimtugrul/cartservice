@@ -14,4 +14,5 @@ public class CartVo {
     private double totalAmountAfterDiscount;
     private double totalAmountAfterCoupon;
     private double couponAmount;
+    private double deliveryCost;
 }
