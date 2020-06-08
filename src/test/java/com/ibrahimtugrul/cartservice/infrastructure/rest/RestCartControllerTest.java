@@ -79,6 +79,8 @@ public class RestCartControllerTest {
                 .appliedCoupon("appliedCoupon")
                 .totalAmount("100.00")
                 .totalAmountAfterDiscount("75.0")
+                .couponAmount("15.0")
+                .totalAmountAfterCoupon("60.0")
                 .build();
 
         // when
@@ -93,6 +95,8 @@ public class RestCartControllerTest {
         resultActions.andExpect(jsonPath("$[0].appliedCoupon", is(cartResponse.getAppliedCoupon())));
         resultActions.andExpect(jsonPath("$[0].totalAmount", is(cartResponse.getTotalAmount())));
         resultActions.andExpect(jsonPath("$[0].totalAmountAfterDiscount", is(cartResponse.getTotalAmountAfterDiscount())));
+        resultActions.andExpect(jsonPath("$[0].couponAmount", is(cartResponse.getCouponAmount())));
+        resultActions.andExpect(jsonPath("$[0].totalAmountAfterCoupon", is(cartResponse.getTotalAmountAfterCoupon())));
         resultActions.andExpect(jsonPath("$[0].items", hasSize(1)));
         resultActions.andExpect(jsonPath("$[0].items[0].appliedCampaign", is(cartItemResponse.getAppliedCampaign())));
         resultActions.andExpect(jsonPath("$[0].items[0].categoryId", is(cartItemResponse.getCategoryId())));
@@ -105,7 +109,7 @@ public class RestCartControllerTest {
     }
 
     @Test
-    public void should_list_all_cart_when_cart_found_with_id() throws Exception {
+    public void should_list_cart_when_cart_found_with_id() throws Exception {
         // given
         final Long cartId = 1L;
 
@@ -124,6 +128,8 @@ public class RestCartControllerTest {
                 .appliedCoupon("appliedCoupon")
                 .totalAmount("100.00")
                 .totalAmountAfterDiscount("75.0")
+                .couponAmount("15.0")
+                .totalAmountAfterCoupon("60.0")
                 .build();
 
         // when
@@ -138,6 +144,8 @@ public class RestCartControllerTest {
         resultActions.andExpect(jsonPath("$.appliedCoupon", is(cartResponse.getAppliedCoupon())));
         resultActions.andExpect(jsonPath("$.totalAmount", is(cartResponse.getTotalAmount())));
         resultActions.andExpect(jsonPath("$.totalAmountAfterDiscount", is(cartResponse.getTotalAmountAfterDiscount())));
+        resultActions.andExpect(jsonPath("$.couponAmount", is(cartResponse.getCouponAmount())));
+        resultActions.andExpect(jsonPath("$.totalAmountAfterCoupon", is(cartResponse.getTotalAmountAfterCoupon())));
         resultActions.andExpect(jsonPath("$.items", hasSize(1)));
         resultActions.andExpect(jsonPath("$.items[0].appliedCampaign", is(cartItemResponse.getAppliedCampaign())));
         resultActions.andExpect(jsonPath("$.items[0].categoryId", is(cartItemResponse.getCategoryId())));

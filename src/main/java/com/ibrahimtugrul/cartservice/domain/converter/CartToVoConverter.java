@@ -29,6 +29,8 @@ public class CartToVoConverter implements Function<Cart, CartVo>, Converter<Cart
                 .id(cart.getId())
                 .appliedCoupon(cart.getAppliedCoupon())
                 .items(cartItemVoList)
+                .couponAmount(cart.getCouponAmount())
+                .totalAmountAfterCoupon(cart.getTotalAmountAfterCoupon())
                 .build();
     }
 

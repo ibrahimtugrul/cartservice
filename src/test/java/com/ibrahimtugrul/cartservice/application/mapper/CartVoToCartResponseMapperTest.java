@@ -55,6 +55,8 @@ public class CartVoToCartResponseMapperTest {
                 .id(2L)
                 .totalAmount(100.0)
                 .totalAmountAfterDiscount(75.0)
+                .couponAmount(15.0)
+                .totalAmountAfterCoupon(60)
                 .build();
 
         // when
@@ -68,6 +70,8 @@ public class CartVoToCartResponseMapperTest {
         assertThat(cartResponse.getId()).isEqualTo(String.valueOf(cartVo.getId()));
         assertThat(cartResponse.getTotalAmount()).isEqualTo(String.valueOf(cartVo.getTotalAmount()));
         assertThat(cartResponse.getTotalAmountAfterDiscount()).isEqualTo(String.valueOf(cartVo.getTotalAmountAfterDiscount()));
+        assertThat(cartResponse.getCouponAmount()).isEqualTo(String.valueOf(cartVo.getCouponAmount()));
+        assertThat(cartResponse.getTotalAmountAfterCoupon()).isEqualTo(String.valueOf(cartVo.getTotalAmountAfterCoupon()));
         assertThat(cartResponse.getItems()).isNotEmpty();
         assertThat(cartResponse.getItems().size()).isEqualTo(1);
         assertThat(cartResponse.getItems().get(0).getTotalAmountAfterCampaign()).isEqualTo(String.valueOf(cartItemVo.getTotalAmountAfterCampaign()));

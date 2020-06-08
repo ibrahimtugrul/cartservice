@@ -91,6 +91,8 @@ public class RestCartControllerIT extends BaseWebIT {
                 .items(List.of(cartItem))
                 .totalAmount(100.0)
                 .totalAmountAfterDiscount(75.0)
+                .couponAmount(15.0)
+                .totalAmountAfterCoupon(60.0)
                 .build();
 
         cartRepository.save(cart);
@@ -106,6 +108,8 @@ public class RestCartControllerIT extends BaseWebIT {
         resultActions.andExpect(jsonPath("$[0].appliedCoupon", is(String.valueOf(cart.getAppliedCoupon()))));
         resultActions.andExpect(jsonPath("$[0].totalAmount", is(String.valueOf(cart.getTotalAmount()))));
         resultActions.andExpect(jsonPath("$[0].totalAmountAfterDiscount", is(String.valueOf(cart.getTotalAmountAfterDiscount()))));
+        resultActions.andExpect(jsonPath("$[0].couponAmount", is(String.valueOf(cart.getCouponAmount()))));
+        resultActions.andExpect(jsonPath("$[0].totalAmountAfterCoupon", is(String.valueOf(cart.getTotalAmountAfterCoupon()))));
         resultActions.andExpect(jsonPath("$[0].items", hasSize(1)));
         resultActions.andExpect(jsonPath("$[0].items[0].appliedCampaign", is((String.valueOf(cart.getItems().get(0).getAppliedCampaign())))));
         resultActions.andExpect(jsonPath("$[0].items[0].categoryId", is((String.valueOf(cart.getItems().get(0).getCategoryId())))));
@@ -132,6 +136,8 @@ public class RestCartControllerIT extends BaseWebIT {
                 .items(List.of(cartItem))
                 .totalAmount(100.0)
                 .totalAmountAfterDiscount(75.0)
+                .couponAmount(15.0)
+                .totalAmountAfterCoupon(60.0)
                 .build();
 
         cartRepository.save(cart);
@@ -146,6 +152,8 @@ public class RestCartControllerIT extends BaseWebIT {
         resultActions.andExpect(jsonPath("$.appliedCoupon", is(String.valueOf(cart.getAppliedCoupon()))));
         resultActions.andExpect(jsonPath("$.totalAmount", is(String.valueOf(cart.getTotalAmount()))));
         resultActions.andExpect(jsonPath("$.totalAmountAfterDiscount", is(String.valueOf(cart.getTotalAmountAfterDiscount()))));
+        resultActions.andExpect(jsonPath("$.couponAmount", is(String.valueOf(cart.getCouponAmount()))));
+        resultActions.andExpect(jsonPath("$.totalAmountAfterCoupon", is(String.valueOf(cart.getTotalAmountAfterCoupon()))));
         resultActions.andExpect(jsonPath("$.items", hasSize(1)));
         resultActions.andExpect(jsonPath("$.items[0].appliedCampaign", is((String.valueOf(cart.getItems().get(0).getAppliedCampaign())))));
         resultActions.andExpect(jsonPath("$.items[0].categoryId", is((String.valueOf(cart.getItems().get(0).getCategoryId())))));

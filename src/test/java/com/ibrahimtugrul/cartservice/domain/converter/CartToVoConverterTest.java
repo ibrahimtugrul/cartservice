@@ -55,6 +55,8 @@ public class CartToVoConverterTest {
                 .items(List.of(cartItem))
                 .totalAmount(100.0)
                 .totalAmountAfterDiscount(75.0)
+                .couponAmount(15.0)
+                .totalAmountAfterCoupon(60.0)
                 .build();
 
         // when
@@ -68,6 +70,8 @@ public class CartToVoConverterTest {
         assertThat(cartVo.getId()).isEqualTo(cart.getId());
         assertThat(cartVo.getTotalAmount()).isEqualTo(cart.getTotalAmount());
         assertThat(cartVo.getTotalAmountAfterDiscount()).isEqualTo(cart.getTotalAmountAfterDiscount());
+        assertThat(cartVo.getCouponAmount()).isEqualTo(cart.getCouponAmount());
+        assertThat(cartVo.getTotalAmountAfterCoupon()).isEqualTo(cart.getTotalAmountAfterCoupon());
         assertThat(cartVo.getItems()).isNotEmpty();
         assertThat(cartVo.getItems().size()).isEqualTo(1);
         assertThat(cartVo.getItems().get(0).getTotalAmountAfterCampaign()).isEqualTo(cart.getItems().get(0).getTotalAmountAfterCampaign());

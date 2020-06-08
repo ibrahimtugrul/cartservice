@@ -26,6 +26,8 @@ public class CartVoToCartResponseMapper implements Function<CartVo, CartResponse
                 .totalAmount(String.valueOf(cartVo.getTotalAmount()))
                 .appliedCoupon(String.valueOf(cartVo.getAppliedCoupon()))
                 .id(String.valueOf(cartVo.getId()))
+                .couponAmount(String.valueOf(cartVo.getCouponAmount()))
+                .totalAmountAfterCoupon(String.valueOf(cartVo.getTotalAmountAfterCoupon()))
                 .build();
     }
 }
