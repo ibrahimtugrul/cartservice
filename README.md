@@ -8,10 +8,15 @@ you can run jar with 'java -jar target/cartservice-0.0.1-SNAPSHOT.jar'
 
 # Project Architecture
 
-# for api documentation
+# Api Documentation
     http://localhost:8080/swagger-ui.html
 
-# for in-memory database access
+# in-memory database access
     http://localhost:8080//h2-console
     JDBC Url : jdbc:h2:mem:cart-db
     user : sa
+
+# issues
+    - delivery cost calculation can be extended with numberOfProducts and numberOfDelivery,
+        now its based on static values
+    - entities (Product, Campaign etc.) can be updated with different values via PUT or PATCH methods
