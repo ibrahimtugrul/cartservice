@@ -29,11 +29,6 @@ public class RestCouponControllerIT extends BaseWebIT {
 
     private static final String CATEGORY_URL = "/api/v1/coupon";
 
-    @BeforeEach
-    public void setup() {// to delete initial values for integration test health
-        couponRepository.deleteAll();
-    }
-
     @Test
     public void should_save_coupon() throws Exception {
         // given

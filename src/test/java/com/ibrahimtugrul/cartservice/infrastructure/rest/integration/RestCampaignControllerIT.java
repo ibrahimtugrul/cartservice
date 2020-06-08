@@ -28,11 +28,6 @@ public class RestCampaignControllerIT extends BaseWebIT {
 
     private static final String CATEGORY_URL = "/api/v1/campaign";
 
-    @BeforeEach
-    public void setup() {// to delete initial values for integration test health
-        campaignRepository.deleteAll();
-    }
-
     @Test
     public void should_save_campaign() throws Exception {
         // given

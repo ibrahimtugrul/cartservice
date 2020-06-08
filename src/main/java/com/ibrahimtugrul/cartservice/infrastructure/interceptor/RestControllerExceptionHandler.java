@@ -49,14 +49,7 @@ public class RestControllerExceptionHandler extends ResponseEntityExceptionHandl
         final RestErrorMessageResponse error = createErrorResponse(REQUEST_VALIDATION_EXCEPTION_USER_MESSAGE, ExceptionType.PARAMETER_VALIDATION, exception.getMessage(), exception.getArguments());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
-/*
-    @ExceptionHandler(InvalidRequestException.class)
-    public ResponseEntity<Object> handleInvalidRequestException(final InvalidRequestException exception) {
-        logger.warn("An invalid request exception has occurred: ", exception);
-        final RestErrorMessageResponse error = createErrorResponse(REQUEST_VALIDATION_EXCEPTION_USER_MESSAGE, ExceptionType.PARAMETER_VALIDATION, exception.getMessage(), null);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-*/
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleRuntimeException(Exception exception) {
         logger.error("A runtime exception has occurred: ", exception);

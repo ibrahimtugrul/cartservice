@@ -1,12 +1,37 @@
-# cartservice implemantation
+# cartservice RESTful api
 
-this project developed on java 11 version
+    this project developed on java 11 version
 
-you can create jar with 'mvn clean install'
+    you can create jar with 'mvn clean install'
 
-you can run jar with 'java -jar target/cartservice-0.0.1-SNAPSHOT.jar'
+    you can run jar with 'java -jar target/cartservice-0.0.1-SNAPSHOT.jar'
 
 # Project Architecture
+    Layers:
+        - application
+            handles:
+                * validation
+                * converting request model to vo's
+                * calling services
+                * mapping vo's to response model
+                * prepare and return response
+        - domain
+            handles:
+                * business logic
+                * entities
+                * repository
+                * business constants
+                * outer service call for related business logic
+                * caching
+        - infrastructure
+            handles:
+                * configuration
+                * security
+                * central logging
+                * exception handling
+                * rest endpoints
+                * localization
+                * basic validation
 
 # Api Documentation
     http://localhost:8080/swagger-ui.html
@@ -20,3 +45,10 @@ you can run jar with 'java -jar target/cartservice-0.0.1-SNAPSHOT.jar'
     - delivery cost calculation can be extended with numberOfProducts and numberOfDelivery,
         now its based on static values
     - entities (Product, Campaign etc.) can be updated with different values via PUT or PATCH methods
+    - adding applyCoupon when addItem to cart
+    - refactoring for cleaner code and better readability
+    - run static code review
+    - add observability pillars (trace, monitor)
+    - split project to micro-services
+    - dockerize projects
+    - extend %85 line test coverage to over %90

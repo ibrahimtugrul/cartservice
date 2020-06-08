@@ -27,11 +27,6 @@ public class RestCategoryControllerIT extends BaseWebIT {
 
     private static final String CATEGORY_URL = "/api/v1/category";
 
-    @BeforeEach
-    public void setup() {// to delete initial values for integration test health
-        categoryRepository.deleteAll();
-    }
-
     @Test
     public void should_save_category() throws Exception {
         // given

@@ -29,11 +29,6 @@ public class RestProductControllerIT extends BaseWebIT {
 
     private static final String PRODUCT_URL = "/api/v1/product";
 
-    @BeforeEach
-    public void setup() {// to delete initial values for integration test health
-        productRepository.deleteAll();
-    }
-
     @Test
     public void should_save_product() throws Exception {
         // given

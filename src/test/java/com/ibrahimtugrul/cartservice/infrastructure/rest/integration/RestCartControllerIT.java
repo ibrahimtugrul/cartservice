@@ -42,13 +42,6 @@ public class RestCartControllerIT extends BaseWebIT {
 
     private static final String CART_URL = "/api/v1/cart";
 
-    @BeforeEach
-    public void setup() {// to delete initial values for integration test health
-        cartRepository.deleteAll();
-        productRepository.deleteAll();
-        campaignRepository.deleteAll();
-    }
-
     @Test
     public void should_save_cart() throws Exception {
         // given
