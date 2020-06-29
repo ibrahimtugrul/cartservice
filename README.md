@@ -44,8 +44,10 @@
 # issues
     - delivery cost calculation can be extended with numberOfProducts and numberOfDelivery,
         now its based on static values
+    - validation for campaign and coupon rate's 
     - entities (Product, Campaign etc.) can be updated with different values via PUT or PATCH methods
     - adding applyCoupon when addItem to cart
+    - make Vo's more light
     - refactoring for cleaner code and better readability
     - run static code review
     - add observability pillars (trace, monitor)
